@@ -74,7 +74,7 @@ public class KitchenMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("kitchen_negotiatoragent", "it.sh.prob.mas.room.kitchen.NegotiatorAgent");
-		memberAgents.put("kitchen_reasoneragent", "it.sh.prob.mas.room.kitchen.ReasonerAgent");
+		memberAgents.put("KitNegotiatorAgent", "it.sh.prob.mas.room.kitchen.KitNegotiatorAgent");
+		memberAgents.put("KitReasonerAgent", "it.sh.prob.mas.room.kitchen.KitReasonerAgent");
 	}
 }

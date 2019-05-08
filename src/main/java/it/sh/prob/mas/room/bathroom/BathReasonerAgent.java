@@ -3,7 +3,7 @@ package it.sh.prob.mas.room.bathroom;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 
-public class ReasonerAgent extends Agent{
+public class BathReasonerAgent extends Agent{
 
 	/**
 	 * 

@@ -3,7 +3,7 @@ package it.sh.prob.mas.room.livingroom;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 
-public class NegotiatorAgent extends Agent{
+public class LRReasonerAgent extends Agent {
 	/**
 	 * 
 	 */
@@ -21,7 +21,7 @@ public class NegotiatorAgent extends Agent{
 
 		@Override
 		public void action() {
-			System.out.println("Living room negotiator AGENT....");
+			System.out.println("Living room REASONEER AGENT....");
 			try {
 				Thread.sleep(1000);
 			} catch (Exception e) {

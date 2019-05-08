@@ -1,9 +1,9 @@
-package it.sh.prob.mas.room.kitchen;
+package it.sh.prob.mas.room.bedroom;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 
-public class ReasonerAgent extends Agent{
+public class BedNegotiatorAgent extends Agent {
 	/**
 	 * 
 	 */
@@ -21,7 +21,7 @@ public class ReasonerAgent extends Agent{
 
 		@Override
 		public void action() {
-			System.out.println("Kitchen REASONEER AGENT....");
+			System.out.println("bedroom negoitator AGENT....");
 			try {
 				Thread.sleep(1000);
 			} catch (Exception e) {

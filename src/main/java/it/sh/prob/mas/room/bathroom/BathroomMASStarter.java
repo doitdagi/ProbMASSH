@@ -74,8 +74,8 @@ public class BathroomMASStarter extends MASStarter{
 
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("bathroom_negotiatoragent", "it.sh.prob.mas.room.bathroom.NegotiatorAgent");
-		memberAgents.put("bathroom_reasoneragent", "it.sh.prob.mas.room.bathroom.ReasonerAgent");
+		memberAgents.put("BathNegotiatorAgent", "it.sh.prob.mas.room.bathroom.BathNegotiatorAgent");
+		memberAgents.put("BathReasonerAgent", "it.sh.prob.mas.room.bathroom.BathReasonerAgent");
 	}
 
 

@@ -3,8 +3,8 @@ package it.sh.prob.mas;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.sh.prob.mas.room.bathroom.NegotiatorAgent;
-import it.sh.prob.mas.room.bathroom.ReasonerAgent;
+import it.sh.prob.mas.room.bathroom.BathNegotiatorAgent;
+import it.sh.prob.mas.room.bathroom.BathReasonerAgent;
 import jade.core.Agent;
 
 public class MASStarter {
