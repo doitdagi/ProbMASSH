@@ -59,9 +59,7 @@ public class LivingroomMASStarter extends MASStarter{
 			p.setParameter(Profile.MAIN_PORT, HOST_PORT);
 			ac = jade.core.Runtime.instance().createAgentContainer(p);
 		}
-
 		// add and start all agent
-
 		for (Map.Entry<String, Agent> agent : memberAgents.entrySet()) {
 			try {
 				ac.acceptNewAgent(agent.getKey(), agent.getValue()).start();
@@ -74,8 +72,8 @@ public class LivingroomMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("negotiatoragent", new NegotiatorAgent());
-		memberAgents.put("reasoneragent", new ReasonerAgent());
+		memberAgents.put("livingroom_negotiatoragent", new NegotiatorAgent());
+		memberAgents.put("livingroom_reasoneragent", new ReasonerAgent());
 	}
 
 }

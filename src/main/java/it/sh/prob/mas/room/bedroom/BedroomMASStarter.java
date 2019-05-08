@@ -74,8 +74,8 @@ public class BedroomMASStarter extends MASStarter{
 	}
 
 	private static void initializeMemberAgents() {
-		memberAgents.put("negotiatoragent", new NegotiatorAgent());
-		memberAgents.put("reasoneragent", new ReasonerAgent());
+		memberAgents.put("bedroom_negotiatoragent", new NegotiatorAgent());
+		memberAgents.put("bedroom_reasoneragent", new ReasonerAgent());
 	}
 	
 }
