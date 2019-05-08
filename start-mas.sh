@@ -8,8 +8,8 @@ IS_MAIN=$2
 #set gui for display any other string o.w
 DISPLAY_GUI=$3
 #Better to modify these values inside this script, than passing the values from the terminal
-HOST_ADDRESS=00.00.00.00 
-HOST_PORT=0000
+HOST_ADDRESS=10.42.00.01
+HOST_PORT=1099
 
 
 #start agent 
