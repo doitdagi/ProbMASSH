@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
-import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.StaleProxyException;
 
 public class BedroomMASStarter extends MASStarter{
-	protected static Map<String, Agent> memberAgents = new HashMap<String, Agent>();
+	protected static Map<String, String> memberAgents = new HashMap<String, String>();
 
 	/**
 	 * 
@@ -20,7 +19,6 @@ public class BedroomMASStarter extends MASStarter{
 	 *             String: the host IP address args[3] String: the host port address
 	 */
 	public static void main(String[] args) {
-		memberAgents = new HashMap<String, Agent>();
 		if (args.length != 4) {
 			System.err.println("INVALID PARAMETER SIZE");
 			return;
@@ -63,9 +61,9 @@ public class BedroomMASStarter extends MASStarter{
 
 		// add and start all agent
 
-		for (Map.Entry<String, Agent> agent : memberAgents.entrySet()) {
+		for (Map.Entry<String, String> agent : memberAgents.entrySet()) {
 			try {
-				ac.acceptNewAgent(agent.getKey(), agent.getValue()).start();
+				ac.createNewAgent(agent.getKey(), agent.getValue(), null).start();
 			} catch (StaleProxyException e) {
 				e.printStackTrace();
 			}
@@ -74,8 +72,8 @@ public class BedroomMASStarter extends MASStarter{
 	}
 
 	private static void initializeMemberAgents() {
-		memberAgents.put("bedroom_negotiatoragent", new NegotiatorAgent());
-		memberAgents.put("bedroom_reasoneragent", new ReasonerAgent());
+		memberAgents.put("bedroom_negotiatoragent", "it.sh.prob.mas.room.bedroom.NegotiatorAgent");
+		memberAgents.put("bedroom_reasoneragent", "it.sh.prob.mas.room.bedroom.ReasonerAgent");
 	}
 	
 }

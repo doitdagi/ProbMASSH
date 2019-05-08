@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
-import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.StaleProxyException;
 
 public class LivingroomMASStarter extends MASStarter{
-	protected static Map<String, Agent> memberAgents = new HashMap<String, Agent>();
+	protected static Map<String, String> memberAgents = new HashMap<String, String>();
  
 	/**
 	 * 
@@ -60,9 +59,9 @@ public class LivingroomMASStarter extends MASStarter{
 			ac = jade.core.Runtime.instance().createAgentContainer(p);
 		}
 		// add and start all agent
-		for (Map.Entry<String, Agent> agent : memberAgents.entrySet()) {
+		for (Map.Entry<String, String> agent : memberAgents.entrySet()) {
 			try {
-				ac.acceptNewAgent(agent.getKey(), agent.getValue()).start();
+				ac.createNewAgent(agent.getKey(), agent.getValue(), null).start();
 			} catch (StaleProxyException e) {
 				e.printStackTrace();
 			}
@@ -72,8 +71,8 @@ public class LivingroomMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("livingroom_negotiatoragent", new NegotiatorAgent());
-		memberAgents.put("livingroom_reasoneragent", new ReasonerAgent());
+		memberAgents.put("livingroom_negotiatoragent", "it.sh.prob.mas.room.livingroom.NegotiatorAgent");
+		memberAgents.put("livingroom_reasoneragent", "it.sh.prob.mas.room.livingroom.ReasonerAgent");
 	}
 
 }

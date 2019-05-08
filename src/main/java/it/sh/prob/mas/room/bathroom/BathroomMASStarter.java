@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
-import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -12,7 +11,7 @@ import jade.wrapper.StaleProxyException;
 
 public class BathroomMASStarter extends MASStarter{
 	 
-	protected static Map<String, Agent> memberAgents = new HashMap<String, Agent>();
+	protected static Map<String, String> memberAgents = new HashMap<String, String>();
 
 	/**
 	 * 
@@ -63,9 +62,9 @@ public class BathroomMASStarter extends MASStarter{
 
 		// add and start all agent
 
-		for (Map.Entry<String, Agent> agent : memberAgents.entrySet()) {
+		for (Map.Entry<String, String> agent : memberAgents.entrySet()) {
 			try {
-				ac.acceptNewAgent(agent.getKey(), agent.getValue()).start();
+				ac.createNewAgent(agent.getKey(), agent.getValue(), null).start();
 			} catch (StaleProxyException e) {
 				e.printStackTrace();
 			}
@@ -75,8 +74,8 @@ public class BathroomMASStarter extends MASStarter{
 
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("bathroom_negotiatoragent", new NegotiatorAgent());
-		memberAgents.put("bathroom_reasoneragent", new ReasonerAgent());
+		memberAgents.put("bathroom_negotiatoragent", "it.sh.prob.mas.room.bathroom.NegotiatorAgent");
+		memberAgents.put("bathroom_reasoneragent", "it.sh.prob.mas.room.bathroom.ReasonerAgent");
 	}
 
 
