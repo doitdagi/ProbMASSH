@@ -1,4 +1,4 @@
-package it.sh.prob.mas.room.livingroom;
+package it.sh.prob.mas.room.bathroom;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +10,10 @@ import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.StaleProxyException;
 
-public class LivingroomMASStarter extends MASStarter{
+public class BathroomMASStarter extends MASStarter{
+	 
 	protected static Map<String, Agent> memberAgents = new HashMap<String, Agent>();
- 
+
 	/**
 	 * 
 	 * @param args IS an array of size four args[0] boolean if the container is main
@@ -26,8 +27,8 @@ public class LivingroomMASStarter extends MASStarter{
 		}
 		if (args[0].equals("main")) {
 			isMain = true;
-		}else {
-			if (validIP(args[2])) {
+ 		}else {
+ 			if (validIP(args[2])) {
 				HOST_ADDRESS = args[2];
 			} else {
 				System.err.println("INVALID HOST ADDRESS");
@@ -71,11 +72,12 @@ public class LivingroomMASStarter extends MASStarter{
 		}
 		System.out.println("Sucessfully started...");
 	}
-	
+
 	
 	private static void initializeMemberAgents() {
 		memberAgents.put("negotiatoragent", new NegotiatorAgent());
 		memberAgents.put("reasoneragent", new ReasonerAgent());
 	}
+
 
 }
