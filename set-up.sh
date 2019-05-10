@@ -1,5 +1,11 @@
 #!/bin/sh
 
+echo Update python version 
+update-alternatives --install /usr/bin/python python /usr/bin/python3.5 1
+
+echo Install Problog
+pip3 install problog
+
 echo  Installing maven... 
 apt-get install maven 
 

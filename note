@@ -1,1 +1,11 @@
- 
+Reasoner Agent
+-------------------------------------
+- we implement two scenarios 
+		I. one involves uncertainty reasoning, that is "turn on the light" user command without specifying which light to turn on
+		   - this scenario do not involve negotiation
+		II. The second one involves negotiation of information between different room's negotiator agents 
+- The reasoner agent makes decision when
+        I. it receive user command 
+        II. or it detects a change environment 
+             
+        
