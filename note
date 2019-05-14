@@ -8,4 +8,11 @@ Reasoner Agent
         I. it receive user command 
         II. or it detects a change environment 
              
-        
+  
+  
+  
+  =========================================================
+  Service naming convention 
+  SERVICE_NAME= "LOCATION"+"_"+"SERVICE_TYPE" EG. BATHROOM_LIGHT      
+  SERVICE_TYPE="SERVICE_TYPE" E.G. LIGHT
+  SERVICE_LOCATION= "LOCATION" E.G. KITCHEN 
