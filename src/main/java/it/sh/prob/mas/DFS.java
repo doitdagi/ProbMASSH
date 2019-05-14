@@ -1,42 +1,54 @@
 package it.sh.prob.mas;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.stream.Stream;
 
 public class DFS {
 
 	public static void main(String[] args) {
-			//create file file temp
-			//run problog on the file
-			//take the result 
-			//measure file
-			
-		
-			
-			try {
-				double startT = System.currentTimeMillis();					
-				Runtime rt = Runtime.getRuntime();
-				Process pr = rt.exec("problog /home/fd/Documents/phd/workspace/ProbMASSH/rules/test.pl");
-				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-				String line=null;
-				Stream<String> result = input.lines();
-			 	double finisihT = System.currentTimeMillis();
-				
-				double totalT = (finisihT-startT);
-				System.out.println("STARTED: "+ startT);
-				System.out.println("FINISH TIME:"+ finisihT);
-				System.out.println("total time(SEC) :" +totalT );
-				System.out.println("Done bro....");
-				
-				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
 
+		try {
+			 
+			
+			String prologModel = "printf \"hello world\"";
+
+			
+			//#!/bin/sh
+
+			String[] command = {"/bin/sh","-c ", "printf hello"};
+			String[] cmd = {
+					"/bin/sh",
+					"-c",
+					"printf \"0.9::a. \n 0.3::b. \nquery(a). \nquery(b).\" | problog"
+					};
+
+			
+			// printf "hello world"
+			
+			Runtime rt = Runtime.getRuntime();
+			Process pr = rt.exec(cmd);
+			
+			pr.waitFor();
+			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+			System.out.println(pr.exitValue());
+			Object[] resuslt = input.lines().toArray();
+
+			for (Object object : resuslt) {
+				if (object instanceof String) {
+					System.out.println((String) object);
+				}
+			}
+			//working on cli
+			// printf "0.9::a.\n query(a).\n" | problog
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
 
 }

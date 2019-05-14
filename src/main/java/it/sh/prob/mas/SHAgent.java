@@ -3,8 +3,8 @@ package it.sh.prob.mas;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
-import it.sh.prob.mas.utilites.SHServices;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -31,24 +31,47 @@ public class SHAgent extends Agent {
 	 * @param agentID
 	 * @param services
 	 */
-	protected void registerRelevantSHServices(AID agentID, List<SHServices> services) {
-		String service;
-		ServiceDescription sd;
+	
+	/**
+	 *  register devices services which can be consumed by the reasoner agent   
+	 * @param type
+	 * 			type of the required service e.g. BATHROOM_LIGHT
+	 * @param ownership
+	 * 				Location e.g. BATHROOM
+	 * @param agentID
+	 */
+	protected void registerRelevantSHServices(String type) {
 		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(agentID);
-		for (int i = 0; i < services.size(); i++) {
-			service = services.get(i).toString();
-			sd = new ServiceDescription();
-			sd.setName(service);
-			sd.setType(service);
-			dfd.addServices(sd);
-		}
+		ServiceDescription sd = new ServiceDescription();
+		dfd.setName(getAID());
+		sd.setName(getLocalName()+"_"+type);
+		sd.setType(type);
+ 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
-		} catch (FIPAException fe) {
-			fe.printStackTrace();
+		} catch (FIPAException e) {
+ 			e.printStackTrace();
 		}
 	}
+	
+
+	
+	/**
+	 * 
+	 */
+	protected void registerDeviceController(String type){
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setName(getLocalName()+"_"+type);
+		sd.setType(type);
+		dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException e) {
+ 			e.printStackTrace();
+		}
+ 	}
 
 	/**
 	 * The   services can be located with service id (service name) without
@@ -58,27 +81,95 @@ public class SHAgent extends Agent {
 	 * @param myAgent
 	 * @return
 	 */
-	protected List<AID> getDeviceServiceProviders(SHServices service, Agent myAgent) {
+	
+	/**
+	 *  Get service provider agents 
+	 * @param name
+	 * 			name of the required service 	
+	 * 					e.g:  BATHROOM_LIGHT
+	 * @param type
+	 * 			type of the required service e.g. LIGHT
+	 * @param ownership
+	 * 				Location e.g. BATHROOM
+	 * @param myAgent
+	 * 				the agent 
+	 * @return
+	 */
+	protected List<AID> getDeviceServiceProviders(String type, Agent myAgent) {
 		List<AID> serviceProviders = new ArrayList<AID>();
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
-		sd.setType(service.toString());
-		sd.setName(service.toString());
+		sd.setType(type);
 		template.addServices(sd);
+		Agent t = myAgent;
 		try {
 			DFAgentDescription[] result = DFService.search(myAgent, template);
+			System.out.println("result size"+result.length);
 			if (result != null) {
 				for (int i = 0; i < result.length; i++) {
 					if (!(myAgent.getAID().equals(result[i].getName()))) {
 						serviceProviders.add(result[i].getName());
+						
 					}
 				}
 			}
-			System.out.println(serviceProviders.size());
-		} catch (Exception e) {
+ 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return serviceProviders;
+	}
+	
+	
+	/**
+	 * Formulate the service name given its
+	 * @param location
+	 * @param service
+	 * @return
+	 */
+	protected String getServiceName(String location, String service) {
+		return location+"_"+service;
+	}
+	
+	
+	
+	protected String parseProblogOutput(Stream<String> problogOutput) {
+		String result = "";
+		Double value = 0.0;
+		Double newValue;
+		for (Object s : problogOutput.toArray()) {
+			String line = (String) s;
+			newValue = Double.valueOf(line.split(":")[0].trim());
+			if(newValue>value) {
+				value = newValue;
+				result = line.split(":")[0].trim();
+			}
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 *  		The device controller agent for the given service and location
+	 *  		For example the kitchen light controller agent id for light service in the kitchen 
+	 */
+	protected AID getDeviceControllerAgent(String type, Agent myAgent) {
+		AID controllerAgentID = null ;
+		DFAgentDescription template = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType(type);
+		template.addServices(sd);
+		try {
+			DFAgentDescription[] result = DFService.search(myAgent, template);
+			if (result != null) {
+ 				controllerAgentID = result[0].getName();
+			}
+		} catch (FIPAException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return controllerAgentID;
 	}
 
 //	// service name bedroom_temp

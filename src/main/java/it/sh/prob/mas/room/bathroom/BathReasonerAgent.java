@@ -8,11 +8,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.print.attribute.standard.Finishings;
 
 import it.sh.prob.mas.SHAgent;
+import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.utilites.BathroomLights;
 import it.sh.prob.mas.utilites.SHServices;
 import it.sh.prob.mas.utilites.UserCommands;
@@ -24,24 +22,22 @@ import jade.lang.acl.MessageTemplate;
 
 public class BathReasonerAgent extends SHAgent {
 
-	private static final String BATH_LIGHT_RULE_PATH =  "rules/light_rule.pl";
+	private static final String BATH_LIGHT_RULE_PATH = "rules/light_rule.pl";
 	JProblog jp = new JProblog();
 
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
-	
 	@Override
 	protected void setup() {
 		addBehaviour(new ReasoningBehavior());
 	}
 
+	// TODO: I AM WORKING ONLY ON THE USER COMMAND NOW
+	// wait for user command or change in environment parameters
 	private class ReasoningBehavior extends CyclicBehaviour {
-
 		/**
 		 * 
 		 */
@@ -49,8 +45,7 @@ public class BathReasonerAgent extends SHAgent {
 
 		@Override
 		public void action() {
-			// TODO: I AM WORKING ONLY ON THE USER COMMAND NOW
-			// wait for user command or change in environment parameters
+			List<AID> serviceProviderAgents;
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 			ACLMessage userRequest = myAgent.receive(mt);
 
@@ -58,12 +53,12 @@ public class BathReasonerAgent extends SHAgent {
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
-					// TODO: FINISH EVERYTHING HERE
 //					//look for all relevant services for turn on light 
-					SHServices service = getService(userCommand);
-					List<AID> serviceProviderAgents = getDeviceServiceProviders(service, myAgent);
-
+					serviceProviderAgents = getDeviceServiceProviders(SHParameters.BATHROOM_LIGHT_SENSOR, myAgent);
+					
 					if (serviceProviderAgents.isEmpty()) {
+						// IF NO SERVICE PROVIDER OR DEVICE AGENTS FOR THE REQUIRED USER COMMAND BASED
+						// ON DEFAULT VALUES OF THE RULE
 						// Reason by default values
 						// or send failure messages
 					} else {
@@ -73,50 +68,32 @@ public class BathReasonerAgent extends SHAgent {
 							requestInformation.addReceiver(aid);
 							requestInformation.setContent("");
 							myAgent.send(requestInformation);
+						
 						}
-						MessageTemplate infoMT = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+						// WAIT UNTIL ALL PROVIDERS REPIES
 						List<ACLMessage> informationList = new ArrayList<ACLMessage>();
-						int noOfInformationProvider = serviceProviderAgents.size();
-						while (noOfInformationProvider > 0) {
-							ACLMessage reply = myAgent.blockingReceive(infoMT);
-							informationList.add(reply);
-							noOfInformationProvider--;
- 						}
+						MessageTemplate infoMT;
+						for (AID aid : serviceProviderAgents) {
+							 infoMT = MessageTemplate.MatchSender(aid);
+								ACLMessage reply = myAgent.blockingReceive(infoMT);
+								informationList.add(reply);
+						}
+ 
+						// BUILD THE PROBLOG MODEL
+						String problogModel = buildProblogModel(SHParameters.LIGHT, informationList);
 
-						
-						String problogModel =	buildProblogModel(service, informationList);
-						
-						
-
-						//TODO: RUN PROBLOG USING THE FRAMEWORK
-						double startT = System.currentTimeMillis();					
-						String ss = jp.apply(problogModel);
-						double finisihT = System.currentTimeMillis();
-						double totalT = (finisihT-startT);
-						System.out.println("total time,,,,,,,,(SEC) :" +totalT );
-
-						System.out.println("=============");
-						
-						runProlog();
-						
-//
-//						
-						
-						//	System.out.println(ss);
-//						//wait for reply from every devices within the deadline 
-//						//aggregiate the reply
-//						//form the prolog model and reason
-//						//send command 
-					}
-//					
-//					
-//					
-//					//determine relevant device agents 
-//					//send request 
-//					//reason 
-//					
-//					
-//					
+						// TODO: RUN PROBLOG USING THE FRAMEWORK
+ //						String ss = jp.apply(problogModel);
+  					//	String selectedCMD = runProlog();
+  						String selectedCMD = runProlog(problogModel);
+  						 
+  						// Send command for the actuator device
+						 AID lightController = 	getDeviceControllerAgent(SHParameters.BATHROOM_LIGHT_ACTUATOR, myAgent); 
+						ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
+						cmd.addReceiver(lightController);
+						cmd.setContent(selectedCMD);
+						myAgent.send(cmd);
+ 					}
 					break;
 ////				case HEAT_UP_THE_ROOM:
 ////					System.out.println("heat up the room command");
@@ -126,20 +103,14 @@ public class BathReasonerAgent extends SHAgent {
 					break;
 				}
 			}
-
-			// Determine the devices agents related with the event
-			// and request for the relevant information
-
-			// Determine the success probability
-
-			// execute the command
-
+ 
 		}
 
 	}
 
 	/**
-	 * Given user command find the relevant service associated with it
+	 * Given user command find the relevant service/ DATA Providers which are
+	 * required to evaluate and execute the user command associated with it
 	 * 
 	 * @param userCMD USER COMMAND SHOULD BE DEFINED AS
 	 *                OPERATION_ACTION_OBJECT/THING
@@ -150,14 +121,13 @@ public class BathReasonerAgent extends SHAgent {
 		return SHServices.valueOf(serviceName);
 	}
 
-	
-	private String buildProblogModel(SHServices service, List<ACLMessage> informationList) {
+	private String buildProblogModel(String service, List<ACLMessage> informationList) {
 		String model = "";
 		for (ACLMessage aclMessage : informationList) {
-			model = model + aclMessage.getContent()+"\n";
-		}		
+			model = model + aclMessage.getContent() + "\n";
+		}
 		switch (service) {
-		case LIGHT:
+		case SHParameters.LIGHT:
 			List<String> list = new ArrayList<>();
 			try (BufferedReader br = Files.newBufferedReader(Paths.get(BATH_LIGHT_RULE_PATH))) {
 				list = br.lines().collect(Collectors.toList());
@@ -165,64 +135,66 @@ public class BathReasonerAgent extends SHAgent {
 				e.printStackTrace();
 			}
 			for (String string : list) {
-				model = model+ string +"\n"; 
+				model = model + string + "\n";
 			}
-			model = model +	buildQuery(service);
+			model = model + buildQuery(service);
 			break;
-		case  TEMPERATURE:
+		case SHParameters.TEMPERATURE:
 			break;
 		default:
 			break;
 		}
 		return model;
 	}
-	
-	
-	/**
-	 * ruN PROLOG FROM COMMAND LINE
-	 *TODO: BUILD FILE OR TRY TO RUN RUN THE STRING AS PIP
-	 */
-	private void runProlog() {
-		//create file file temp
-		//run problog on the file
-		//take the result 
-		//measure file
+ 	
+	protected String runProlog(String probLogModel) {
+		String command = "";
+		double value = 0;
+		double newValue = 0;
+		String[] line; //a line from the result
+		String model = "printf \""+probLogModel+"\"";
+		String[] cmd = {
+				"/bin/sh",
+				"-c",
+				model + "| problog"
+				};
+		
 		try {
-			double startT = System.currentTimeMillis();					
+			// Run problog
 			Runtime rt = Runtime.getRuntime();
-			Process pr = rt.exec("problog /home/fd/Documents/phd/workspace/ProbMASSH/rules/test.pl");
+			Process pr = rt.exec(cmd);
+			pr.waitFor();
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-			String line=null;
-			Stream<String> result = input.lines();
-		 	double finisihT = System.currentTimeMillis();
-			
-			double totalT = (finisihT-startT);
-			System.out.println("total time(SEC) :" +totalT );
-			
-			
+			Object[] result = input.lines().toArray();
+			// select the the command with max probability
+			for (int i = 0; i < result.length; i++) {
+				line = ((String) result[i]).split(":");
+				newValue = Double.valueOf(line[1].trim());
+				if (newValue >= value) {
+					value = newValue;
+					command = line[0].trim();
+				}
+			}
+			return command;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+		return null;
 	}
+	
+	
 
-	private String buildQuery(SHServices service) {
+	private String buildQuery(String service) {
 		String query = "";
 		switch (service) {
-		case LIGHT:
-			for(BathroomLights bls : BathroomLights.values()) {
-				query = query+ "query("+bls+").\n";
+		case SHParameters.LIGHT:
+			for (BathroomLights bls : BathroomLights.values()) {
+				query = query + "query(" + bls + ").\n";
 			}
-  			break;
+			break;
 		default:
 			break;
- 		}
-
-	return query; 
+		}
+		return query;
 	}
-	
-	
 }

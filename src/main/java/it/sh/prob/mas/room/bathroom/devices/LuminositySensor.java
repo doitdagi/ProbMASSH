@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import it.sh.prob.mas.SHDeviceAgent;
+import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.utilites.LumValue;
 import it.sh.prob.mas.utilites.SHServices;
 import jade.core.AID;
@@ -43,7 +44,7 @@ public class LuminositySensor extends SHDeviceAgent {
 
 		@Override
 		public void action() {
-			registerRelevantSHServices(getAID(), relevantTo);
+			registerRelevantSHServices(SHParameters.BATHROOM_LIGHT_SENSOR);
 		}
 	}
 
@@ -56,7 +57,7 @@ public class LuminositySensor extends SHDeviceAgent {
 		@Override
 		public void action() {
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-			ACLMessage msg = receive(mt);
+			ACLMessage msg = blockingReceive(mt);
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
