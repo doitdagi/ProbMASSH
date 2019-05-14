@@ -5,7 +5,7 @@
 0.90::sinkLight:- activity(washing),location(near_sink).
 0.70::sinkLight:- activity(washing).
 
-0.90::dinningLight:- activity(dinning),location(dinning_table).
+1.00::dinningLight:- activity(dinning),location(dinning_table).
 0.70::dinningLight:- activity(dinning).
 0.50::dinningLight:- location(dinning_table).
 
