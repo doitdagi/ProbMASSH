@@ -5,8 +5,8 @@ Reasoner Agent
 		   - this scenario do not involve negotiation
 		II. The second one involves negotiation of information between different room's negotiator agents 
 - The reasoner agent makes decision when
-        I. it receive user command 
-        II. or it detects a change environment 
+        I. it receive user command [DONE]
+        II. or it detects a change environment [TODO] 
              
   
   

@@ -74,7 +74,13 @@ public class KitchenMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("KitNegotiatorAgent", "it.sh.prob.mas.room.kitchen.KitNegotiatorAgent");
+	//	memberAgents.put("KitNegotiatorAgent", "it.sh.prob.mas.room.kitchen.KitNegotiatorAgent");
 		memberAgents.put("KitReasonerAgent", "it.sh.prob.mas.room.kitchen.KitReasonerAgent");
-	}
+		
+		memberAgents.put("KitLuminositySensor", "it.sh.prob.mas.room.kitchen.devices.KitchenActivityRecognition");
+		memberAgents.put("KitInhabitantActivityRecognition", "it.sh.prob.mas.room.kitchen.devices.KitchenInhabitantLocalization");
+		memberAgents.put("KitInhabitantLocalization", "it.sh.prob.mas.room.kitchen.devices.KitchenLightController");
+		memberAgents.put("KitLightController", "it.sh.prob.mas.room.kitchen.devices.KitchenLightController");
+
+		}
 }

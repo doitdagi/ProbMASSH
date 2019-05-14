@@ -1,16 +1,16 @@
-package it.sh.prob.mas.room.bathroom.devices;
+package it.sh.prob.mas.room.bedroom.devices;
 
 import it.sh.prob.mas.SHAgent;
 import it.sh.prob.mas.SHParameters;
-import it.sh.prob.mas.utilites.BathroomLights;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomLights;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class LightController extends SHAgent{
+public class BedroomLightController  extends SHAgent{
 
-	private BathroomLights currentLight;
+	private BedroomLights currentLight;
 	
 	private final String CURRENT_LIGHT ="current_light";
 	
@@ -21,8 +21,6 @@ public class LightController extends SHAgent{
 
 	@Override
 	protected void setup() {
-		
-		
 
 		addBehaviour(new OneShotBehaviour() {
 			/**
@@ -32,7 +30,7 @@ public class LightController extends SHAgent{
 
 			@Override
 			public void action() {
-				registerDeviceController(SHParameters.BATHROOM_LIGHT_ACTUATOR);
+				registerDeviceController(SHParameters.BEDROOM_LIGHT_ACTUATOR);
 			}
 		});
 		
@@ -51,8 +49,7 @@ public class LightController extends SHAgent{
 				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 				ACLMessage msg = myAgent.blockingReceive(mt);
 				String newLightValue = msg.getContent();
-				setCurrentLight(BathroomLights.valueOf(newLightValue));
-				System.out.println("New light value set to :"+ newLightValue);
+				setCurrentLight(BedroomLights.valueOf(newLightValue));
 			}
 		});
 	
@@ -82,13 +79,14 @@ public class LightController extends SHAgent{
 	}
 	
 	
-	public BathroomLights getCurrentLight() {
+	public BedroomLights getCurrentLight() {
 		return currentLight;
 	}
 
 
-	public void setCurrentLight(BathroomLights currentLight) {
+	public void setCurrentLight(BedroomLights currentLight) {
 		this.currentLight = currentLight;
 	}
 	
+
 }

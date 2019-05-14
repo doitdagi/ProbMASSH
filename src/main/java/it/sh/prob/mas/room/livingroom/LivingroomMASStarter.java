@@ -71,8 +71,16 @@ public class LivingroomMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-		memberAgents.put("LRNegotiatorAgent", "it.sh.prob.mas.room.livingroom.LRNegotiatorAgent");
+	//	memberAgents.put("LRNegotiatorAgent", "it.sh.prob.mas.room.livingroom.LRNegotiatorAgent");
 		memberAgents.put("LRReasonerAgent", "it.sh.prob.mas.room.livingroom.LRReasonerAgent");
+	
+	
+		memberAgents.put("LRLuminositySensor", "it.sh.prob.mas.room.livingroom.devices.LivingroomActivityRecognition");
+		memberAgents.put("LRInhabitantActivityRecognition", "it.sh.prob.mas.room.livingroom.devices.LivingroomInhabitantLocalization");
+		memberAgents.put("LRInhabitantLocalization", "it.sh.prob.mas.room.livingroom.devices.LivingroomLightController");
+		memberAgents.put("LRLightController", "it.sh.prob.mas.room.livingroom.devices.LivingroomLuminositySensor");
+
+	
 	}
 
 }

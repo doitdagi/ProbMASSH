@@ -6,7 +6,7 @@ import java.util.Random;
 
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
-import it.sh.prob.mas.utilites.LumValue;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomLumValues;
 import it.sh.prob.mas.utilites.SHServices;
 import jade.core.AID;
 import jade.core.Agent;
@@ -16,7 +16,7 @@ import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class LuminositySensor extends SHDeviceAgent {
+public class BathLuminositySensor extends SHDeviceAgent {
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public class LuminositySensor extends SHDeviceAgent {
 	 */
 	private static List<SHServices> relevantTo = Arrays.asList(SHServices.LIGHT);
 
-	private static final LumValue[] lumValues = LumValue.values();
+	private static final BathroomLumValues[] lumValues = BathroomLumValues.values();
 	private static final String PROBLOG_VARIABLE = "luminicity";
 	@Override
 	protected void setup() {

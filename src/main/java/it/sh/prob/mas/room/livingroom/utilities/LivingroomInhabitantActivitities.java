@@ -1,4 +1,4 @@
-package it.sh.prob.mas.utilites;
+package it.sh.prob.mas.room.livingroom.utilities;
 
 /**
  * Activities assumed to be performed in the bedroom by the user, and the system
@@ -7,7 +7,7 @@ package it.sh.prob.mas.utilites;
  * @author fd
  *
  */
-public enum InhabitantActivitityValues {
+public enum LivingroomInhabitantActivitities {
 
 	sleeping, // OR LAY ONE BED
 	reading, // OR WORK ON PC

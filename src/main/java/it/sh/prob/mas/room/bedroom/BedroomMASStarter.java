@@ -72,8 +72,16 @@ public class BedroomMASStarter extends MASStarter{
 	}
 
 	private static void initializeMemberAgents() {
-		memberAgents.put("BedNegotiatorAgent", "it.sh.prob.mas.room.bedroom.BedNegotiatorAgent");
-		memberAgents.put("BedReasonerAgent", "it.sh.prob.mas.room.bedroom.BedReasonerAgent");
+	//	memberAgents.put("BedroomNegotiatorAgent", "it.sh.prob.mas.room.bedroom.BedNegotiatorAgent");
+		memberAgents.put("BedroomReasonerAgent", "it.sh.prob.mas.room.bedroom.BedReasonerAgent");
+	 
+		memberAgents.put("BedroomLuminositySensor", "it.sh.prob.mas.room.bedroom.devices.BedroomActivityRecognition");
+		memberAgents.put("BedroomInhabitantActivityRecognition", "it.sh.prob.mas.room.bedroom.devices.BedroomInhabitantLocalization");
+		memberAgents.put("BedroomInhabitantLocalization", "it.sh.prob.mas.room.bedroom.devices.BedroomLightController");
+
+		memberAgents.put("BedroomLightController", "it.sh.prob.mas.room.bedroom.devices.BedroomLuminositySensor");
+
+	
 	}
 	
 }

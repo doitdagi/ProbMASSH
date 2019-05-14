@@ -1,42 +1,33 @@
-package it.sh.prob.mas.room.bathroom.devices;
+package it.sh.prob.mas.room.bedroom.devices;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
-import it.sh.prob.mas.utilites.InhabitantLocationValues;
-import it.sh.prob.mas.utilites.SHServices;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomInhabitantActivitities;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class InhabitantLocalization extends SHDeviceAgent {
+public class BedroomActivityRecognition extends SHDeviceAgent {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	/**
-	 * List of services that the data generated from this device is relevant 
-	 */
-	private static List<SHServices> relevantTo = Arrays.asList(SHServices.LIGHT);
 
-	private static final InhabitantLocationValues[] supportedLocations = InhabitantLocationValues.values();
-	private static final String PROBLOG_VARIABLE = "location";
+	private static final BedroomInhabitantActivitities[] supportedActivities = BedroomInhabitantActivitities.values();
+
+	private static final String PROBLOG_VARIABLE = "activity";
 	
+	 
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterRelevantSHServices());
-		addBehaviour(new HandleLocationRequest());
+		addBehaviour(new HandleActivityRequest());
 	}
 
-	
-	
-	
-	
-	private class RegisterRelevantSHServices extends OneShotBehaviour{
+	private class RegisterRelevantSHServices extends OneShotBehaviour {
 		/**
 		 * 
 		 */
@@ -44,12 +35,11 @@ public class InhabitantLocalization extends SHDeviceAgent {
 
 		@Override
 		public void action() {
-			registerRelevantSHServices(SHParameters.BATHROOM_LIGHT_SENSOR);
+			registerRelevantSHServices(SHParameters.BEDROOM_LIGHT_SENSOR);
 		}
 	}
-	
-	
-	private class HandleLocationRequest extends CyclicBehaviour {
+
+	private class HandleActivityRequest extends CyclicBehaviour {
 		/**
 		 * 
 		 */
@@ -71,12 +61,15 @@ public class InhabitantLocalization extends SHDeviceAgent {
 
 	}
 
-
+	/**
+	 * Generate inhabitant activity randomly from the lists of supported activities
+	 * in this particular environment
+	 * 
+	 * @return
+	 */
 	@Override
 	protected String generateRandomDeviceValues() {
-		int rnd = new Random().nextInt(supportedLocations.length);
-		System.out.println("Location value newwwwww");
-		return supportedLocations[rnd].toString();
+		int rnd = new Random().nextInt(supportedActivities.length);
+		return supportedActivities[rnd].toString();
 	}
-	
 }
