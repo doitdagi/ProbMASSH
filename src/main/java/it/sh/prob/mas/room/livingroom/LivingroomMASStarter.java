@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -71,16 +72,14 @@ public class LivingroomMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-	//	memberAgents.put("LRNegotiatorAgent", "it.sh.prob.mas.room.livingroom.LRNegotiatorAgent");
-		memberAgents.put("LRReasonerAgent", "it.sh.prob.mas.room.livingroom.LRReasonerAgent");
+		memberAgents.put(AgentID.LIVINGROOM_DF_AID, "it.sh.prob.mas.room.livingroom.LivingroomDF");
+		memberAgents.put(AgentID.LIVINGROOM_NEGOTIATOR_AID, "it.sh.prob.mas.room.livingroom.LRNegotiatorAgent");
+		memberAgents.put(AgentID.LIVINGROOM_REASONER_AID, "it.sh.prob.mas.room.livingroom.LRReasonerAgent");
 	
-	
-		memberAgents.put("LRLuminositySensor", "it.sh.prob.mas.room.livingroom.devices.LivingroomActivityRecognition");
-		memberAgents.put("LRInhabitantActivityRecognition", "it.sh.prob.mas.room.livingroom.devices.LivingroomInhabitantLocalization");
-		memberAgents.put("LRInhabitantLocalization", "it.sh.prob.mas.room.livingroom.devices.LivingroomLightController");
-		memberAgents.put("LRLightController", "it.sh.prob.mas.room.livingroom.devices.LivingroomLuminositySensor");
-
-	
+		memberAgents.put(AgentID.LIVINGROOM_LUMINIOSITY_SENSOR_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomLuminositySensor");
+		memberAgents.put(AgentID.LIVINGROOM_ACTIVITIY_RECOGNITION_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomActivityRecognition");
+		memberAgents.put(AgentID.LIVINGROOM_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomInhabitantLocalization");
+		memberAgents.put(AgentID.LIVINGROOM_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomLightController");
 	}
 
 }

@@ -8,7 +8,8 @@ IS_MAIN=$2
 #set gui for display any other string o.w
 DISPLAY_GUI=$3
 #Better to modify these values inside this script, than passing the values from the terminal
-HOST_ADDRESS=10.42.00.01
+#HOST_ADDRESS=10.42.00.01 TO CONNECT FROM THE PI
+HOST_ADDRESS=172.17.0.1 #TO CONNECT LOCAL FROM LABTOP
 HOST_PORT=1099
 
 

@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.StaleProxyException;
 
-public class BathroomMASStarter extends MASStarter{
-	 
+public class BathroomMASStarter extends MASStarter {
+
 	protected static Map<String, String> memberAgents = new HashMap<String, String>();
 
 	/**
@@ -20,14 +21,14 @@ public class BathroomMASStarter extends MASStarter{
 	 *             String: the host IP address args[3] String: the host port address
 	 */
 	public static void main(String[] args) {
- 		if (args.length != 4) {
+		if (args.length != 4) {
 			System.err.println("INVALID PARAMETER SIZE");
 			return;
 		}
 		if (args[0].equals("main")) {
 			isMain = true;
- 		}else {
- 			if (validIP(args[2])) {
+		} else {
+			if (validIP(args[2])) {
 				HOST_ADDRESS = args[2];
 			} else {
 				System.err.println("INVALID HOST ADDRESS");
@@ -44,7 +45,7 @@ public class BathroomMASStarter extends MASStarter{
 		if (args[1].equals("gui")) {
 			displayGUI = true;
 		}
-		
+
 		initializeMemberAgents();
 		Profile p = new ProfileImpl();
 		AgentContainer ac;
@@ -72,18 +73,20 @@ public class BathroomMASStarter extends MASStarter{
 		System.out.println("Sucessfully started...");
 	}
 
-	
 	private static void initializeMemberAgents() {
-//		memberAgents.put("BathNegotiatorAgent", "it.sh.prob.mas.room.bathroom.BathNegotiatorAgent");
-		memberAgents.put("BathReasonerAgent", "it.sh.prob.mas.room.bathroom.BathReasonerAgent");
-	
-		memberAgents.put("BathLuminositySensor", "it.sh.prob.mas.room.bathroom.devices.LuminositySensor");
-		memberAgents.put("BathInhabitantActivityRecognition", "it.sh.prob.mas.room.bathroom.devices.InhabitantActivityRecognition");
-		memberAgents.put("BathInhabitantLocalization", "it.sh.prob.mas.room.bathroom.devices.InhabitantLocalization");
-		memberAgents.put("BathLightController", "it.sh.prob.mas.room.bathroom.devices.LightController");
+		memberAgents.put(AgentID.BATHROOM_DF_AID, "it.sh.prob.mas.room.bathroom.BathroomDF");
+		memberAgents.put(AgentID.BATHROOM_NEGOTIATOR_AID, "it.sh.prob.mas.room.bathroom.BathNegotiatorAgent");
+		memberAgents.put(AgentID.BATHROOM_REASONER_AID, "it.sh.prob.mas.room.bathroom.BathReasonerAgent");
 
-	
+		memberAgents.put(AgentID.BATHROOM_LUMINIOSITY_SENSOR_AID,
+				"it.sh.prob.mas.room.bathroom.devices.BathLuminositySensor");
+		memberAgents.put(AgentID.BATHROOM_ACTIVITIY_RECOGNITION_AID,
+				"it.sh.prob.mas.room.bathroom.devices.BathActivityRecognition");
+		memberAgents.put(AgentID.BATHROOM_INHABITANT_LOCALIZATION_SENSOR_AID,
+				"it.sh.prob.mas.room.bathroom.devices.BathInhabitantLocalization");
+		memberAgents.put(AgentID.BATHROOM_LIGHT_CONTROLLER_AID,
+				"it.sh.prob.mas.room.bathroom.devices.BathLightController");
+
 	}
-
 
 }

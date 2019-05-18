@@ -1,13 +1,15 @@
 package it.sh.prob.mas.room.bathroom;
 
-import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
+import it.sh.prob.mas.ISHSensors;
+import it.sh.prob.mas.SHNegotiatorAgent;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
+import jade.core.AID;
 
-public class BathNegotiatorAgent extends Agent{
+//TODO: Negotiation over reasoning tasks
+public class BathNegotiatorAgent extends SHNegotiatorAgent {
 
-	 
-	
-	
+	private static final AID myReasonerAgent = new AID("BathReasonerAgent", AID.ISLOCALNAME);
+
 	/**
 	 * 
 	 */
@@ -15,24 +17,19 @@ public class BathNegotiatorAgent extends Agent{
 
 	@Override
 	protected void setup() {
-	
-	addBehaviour(new CyclicBehaviour() {
-		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			System.out.println("bathroom NEGOTIATOR AGENT....");
-			try {
-				Thread.sleep(1000);
-			} catch (Exception e) {
-			}
-		}
-	});
-	
+		addBehaviour(new RegisterGlobalServices());
+		addBehaviour(new InitiatorBehaviour());
+		addBehaviour(new ParticipantBehaviour());
 	}
-	
+
+	@Override
+	protected AID getMyReasonerAID() {
+		return myReasonerAgent;
+	}
+
+	@Override
+	protected ISHSensors[] getSupportedServices() {
+		return BathroomSensors.values();
+	}
+
 }

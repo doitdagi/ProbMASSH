@@ -12,18 +12,15 @@ public final class SHParameters {
 	public final static String TEMPERATURE = "TEMPERATURE";
 	
 	
+	
+	public final static String LIGHT_ACTUATOR= "LIGHT_ACTUATOR";
+	public final static String LIGHT_SENSOR= "LIGHT_SENSOR";
+	
+	
+	
+	//TO BE REMOVED
+	
 	//SERVICE NAMES 
-	public final static String BATHROOM_LIGHT_ACTUATOR= "BATHROOM_LIGHT_ACTUATOR";
-	public final static String BATHROOM_LIGHT_SENSOR= "BATHROOM_LIGHT_SENSOR";
-	
-	public final static String BEDROOM_LIGHT_ACTUATOR = "BEDROOM_LIGHT_ACTUATOR";
-	public final static String BEDROOM_LIGHT_SENSOR = "BEDROOM_LIGHT_SENSOR";
-	
-	public final static String LIVINGROOM_LIGHT_ACTUATOR= "LIVINGROOM_LIGHT_ACTUATOR";
-	public final static String LIVINGROOM_LIGHT_SENSOR = "LIVINGROOM_LIGHT_SENSOR";
-	
-	public final static String KITCHEN_LIGHT_ACTUATOR = "KITCHEN_LIGHT_ACTUATOR";
-	public final static String KITCHEN_LIGHT_SENSOR = "KITCHEN_LIGHT_SENSOR";
-	
+
 	
 }

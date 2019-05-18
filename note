@@ -7,7 +7,7 @@ Reasoner Agent
 - The reasoner agent makes decision when
         I. it receive user command [DONE]
         II. or it detects a change environment [TODO] 
-             
+ -//TODO: Negotiation over reasoning tasks            
   
   
   

@@ -2,6 +2,7 @@ package it.sh.prob.mas.room.bedroom;
 
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
+import it.sh.prob.mas.utilites.AgentID;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -34,7 +35,7 @@ public class BedReasonerAgent extends SHReasonerAgent{
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
-					reasonAboutLight(myAgent,SHParameters.BEDROOM_LIGHT_SENSOR,SHParameters.BEDROOM_LIGHT_ACTUATOR);
+					reasonAboutLight(myAgent,SHParameters.LIGHT_SENSOR,SHParameters.LIGHT_ACTUATOR, toAID(AgentID.BEDROOM_DF_AID));
 					break;
 ////				case HEAT_UP_THE_ROOM:
 ////					System.out.println("heat up the room command");

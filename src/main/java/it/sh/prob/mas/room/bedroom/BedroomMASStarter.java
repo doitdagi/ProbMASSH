@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -72,14 +73,16 @@ public class BedroomMASStarter extends MASStarter{
 	}
 
 	private static void initializeMemberAgents() {
-	//	memberAgents.put("BedroomNegotiatorAgent", "it.sh.prob.mas.room.bedroom.BedNegotiatorAgent");
-		memberAgents.put("BedroomReasonerAgent", "it.sh.prob.mas.room.bedroom.BedReasonerAgent");
+		memberAgents.put(AgentID.BEDROOM_DF_AID, "it.sh.prob.mas.room.bedroom.BedroomDF");
+		memberAgents.put(AgentID.BEDROOM_NEGOTIATOR_AID, "it.sh.prob.mas.room.bedroom.BedNegotiatorAgent");
+		memberAgents.put(AgentID.BEDROOM_NEGOTIATOR_AID, "it.sh.prob.mas.room.bedroom.BedNegotiatorAgent");
+		memberAgents.put(AgentID.BEDROOM_REASONER_AID, "it.sh.prob.mas.room.bedroom.BedReasonerAgent");
 	 
-		memberAgents.put("BedroomLuminositySensor", "it.sh.prob.mas.room.bedroom.devices.BedroomActivityRecognition");
-		memberAgents.put("BedroomInhabitantActivityRecognition", "it.sh.prob.mas.room.bedroom.devices.BedroomInhabitantLocalization");
-		memberAgents.put("BedroomInhabitantLocalization", "it.sh.prob.mas.room.bedroom.devices.BedroomLightController");
-
-		memberAgents.put("BedroomLightController", "it.sh.prob.mas.room.bedroom.devices.BedroomLuminositySensor");
+		memberAgents.put(AgentID.BEDROOM_LUMINIOSITY_SENSOR_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomLuminositySensor");
+		memberAgents.put(AgentID.BEDROOM_ACTIVITIY_RECOGNITION_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomActivityRecognition");
+		memberAgents.put(AgentID.BEDROOM_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomInhabitantLocalization");
+		
+		memberAgents.put(AgentID.BEDROOM_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomLightController");
 
 	
 	}

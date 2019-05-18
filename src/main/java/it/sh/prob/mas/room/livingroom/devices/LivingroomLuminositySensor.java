@@ -5,10 +5,10 @@ import java.util.Random;
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomLumValues;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -23,23 +23,12 @@ public class LivingroomLuminositySensor extends SHDeviceAgent {
 		private static final String PROBLOG_VARIABLE = "luminicity";
 		@Override
 		protected void setup() {
-			addBehaviour(new RegisterRelevantSHServices());
+			addBehaviour(new RegisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID)));
 			addBehaviour(new HandleLuminosityRequest());
 //			addBehaviour(new InformCurrentLumionisity(this, 1000));
 		}
-
-		private class RegisterRelevantSHServices extends OneShotBehaviour {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void action() {
-				registerRelevantSHServices(SHParameters.LIVINGROOM_LIGHT_SENSOR);
-			}
-		}
-
+ 
+		
 		private class HandleLuminosityRequest extends CyclicBehaviour {
 			/**
 			 * 
@@ -49,7 +38,7 @@ public class LivingroomLuminositySensor extends SHDeviceAgent {
 			@Override
 			public void action() {
 				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-				ACLMessage msg = blockingReceive(mt);
+				ACLMessage msg = receive(mt);
 				if (msg != null) {
 					ACLMessage reply = msg.createReply();
 					reply.setPerformative(ACLMessage.INFORM);
@@ -91,6 +80,11 @@ public class LivingroomLuminositySensor extends SHDeviceAgent {
 		protected String generateRandomDeviceValues() {
 			int rnd = new Random().nextInt(lumValues.length);
 			return lumValues[rnd].toString();
+		}
+
+		@Override
+		protected String getSHService() {
+			return SHParameters.LIGHT_SENSOR;
 		}
 
 	}

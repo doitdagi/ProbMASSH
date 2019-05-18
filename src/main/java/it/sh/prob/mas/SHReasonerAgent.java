@@ -22,25 +22,36 @@ public class SHReasonerAgent extends SHAgent {
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
-	
-	protected void reasonAboutLight(Agent myAgent, String sensor, String actuator) {
-		List<AID> serviceProviderAgents;
-		serviceProviderAgents = getDeviceServiceProviders(sensor, myAgent);
-		if (serviceProviderAgents.isEmpty()) {
+
+ 
+	/**
+	 * Reason about lighting of the room
+	 * 
+	 * @param myAgent     the reasoner agent
+	 * @param sensor      The kind of sensor it needs to monitor to perform the
+	 *                    reasoning
+	 * @param actuator    The actuator it needs to control
+	 * @param local_DF_ID The DF that it needs to communicate with to collect the
+	 *                    data from sensors and to control the parameters of the
+	 *                    actuator
+	 */
+	protected void reasonAboutLight(Agent myAgent, String sensor, String actuator, AID local_DF_ID) {
+		List<AID> sensorDataProviders;
+		sensorDataProviders = getSensorDataProviders(sensor, myAgent, local_DF_ID);
+		if (sensorDataProviders.isEmpty()) {
 			String problogModel = buildProblogModel(SHParameters.LIGHT, null);
 			String selectedCMD = runProlog(problogModel);
 			// Send command for the actuator device
-			AID lightController = getDeviceControllerAgent(actuator, myAgent);
+			AID lightController = getDeviceControllerAgent(actuator, myAgent, local_DF_ID);
 			ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
 			cmd.addReceiver(lightController);
 			cmd.setContent(selectedCMD);
 			myAgent.send(cmd);
 		} else {
 			// send request for service provider agents
+			System.out.println("Not empty :"+ sensorDataProviders.size());
 			ACLMessage requestInformation = new ACLMessage(ACLMessage.REQUEST);
-			for (AID aid : serviceProviderAgents) {
+			for (AID aid : sensorDataProviders) {
 				requestInformation.addReceiver(aid);
 				requestInformation.setContent("");
 				myAgent.send(requestInformation);
@@ -49,7 +60,7 @@ public class SHReasonerAgent extends SHAgent {
 			// WAIT UNTIL ALL PROVIDERS REPIES
 			List<ACLMessage> informationList = new ArrayList<ACLMessage>();
 			MessageTemplate infoMT;
-			for (AID aid : serviceProviderAgents) {
+			for (AID aid : sensorDataProviders) {
 				infoMT = MessageTemplate.MatchSender(aid);
 				ACLMessage reply = myAgent.blockingReceive(infoMT);
 				informationList.add(reply);
@@ -60,23 +71,19 @@ public class SHReasonerAgent extends SHAgent {
 			String selectedCMD = runProlog(problogModel);
 
 			// Send command for the actuator device
-			AID lightController = getDeviceControllerAgent(actuator, myAgent);
+			AID lightController = getDeviceControllerAgent(actuator, myAgent, local_DF_ID);
 			ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
 			cmd.addReceiver(lightController);
 			cmd.setContent(selectedCMD);
-			System.out.println("KONJO:"+selectedCMD);
+			System.out.println("KONJO:" + selectedCMD);
 			myAgent.send(cmd);
 		}
 
-		
-		
-		
-		
 	}
-	
-	
+
 	protected String buildProblogModel(String service, List<ACLMessage> informationList) {
 		String model = "";
+		System.out.println("INFORMATION LIST SIE"+informationList==null);
 		for (ACLMessage aclMessage : informationList) {
 			model = model + aclMessage.getContent() + "\n";
 		}

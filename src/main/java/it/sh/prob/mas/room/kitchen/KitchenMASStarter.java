@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.sh.prob.mas.MASStarter;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -74,13 +75,15 @@ public class KitchenMASStarter extends MASStarter{
 	
 	
 	private static void initializeMemberAgents() {
-	//	memberAgents.put("KitNegotiatorAgent", "it.sh.prob.mas.room.kitchen.KitNegotiatorAgent");
-		memberAgents.put("KitReasonerAgent", "it.sh.prob.mas.room.kitchen.KitReasonerAgent");
-		
-		memberAgents.put("KitLuminositySensor", "it.sh.prob.mas.room.kitchen.devices.KitchenActivityRecognition");
-		memberAgents.put("KitInhabitantActivityRecognition", "it.sh.prob.mas.room.kitchen.devices.KitchenInhabitantLocalization");
-		memberAgents.put("KitInhabitantLocalization", "it.sh.prob.mas.room.kitchen.devices.KitchenLightController");
-		memberAgents.put("KitLightController", "it.sh.prob.mas.room.kitchen.devices.KitchenLightController");
+		memberAgents.put(AgentID.KITCHEN_DF_AID, "it.sh.prob.mas.room.kitchen.KitchenDF");
 
+		memberAgents.put(AgentID.KITCHEN_NEGOTIATOR_AID, "it.sh.prob.mas.room.kitchen.KitNegotiatorAgent");
+		memberAgents.put(AgentID.KITCHEN_REASONER_AID, "it.sh.prob.mas.room.kitchen.KitReasonerAgent");
+		
+		memberAgents.put(AgentID.KITCHEN_LUMINIOSITY_SENSOR_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenLuminositySensor");
+		memberAgents.put(AgentID.KITCHEN_ACTIVITIY_RECOGNITION_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenActivityRecognition");
+		memberAgents.put(AgentID.KITCHEN_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenInhabitantLocalization");
+		
+		memberAgents.put(AgentID.KITCHEN_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenLightController");
 		}
 }

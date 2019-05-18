@@ -5,8 +5,8 @@ import java.util.Random;
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomInhabitantActivitityValues;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -20,25 +20,12 @@ public class BathActivityRecognition extends SHDeviceAgent {
 
 	private static final String PROBLOG_VARIABLE = "activity";
 	
-	 
 	@Override
 	protected void setup() {
-		addBehaviour(new RegisterRelevantSHServices());
+		addBehaviour(new RegisterSHServices(toAID(AgentID.BATHROOM_DF_AID)));
 		addBehaviour(new HandleActivityRequest());
 	}
-
-	private class RegisterRelevantSHServices extends OneShotBehaviour {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			registerRelevantSHServices(SHParameters.BATHROOM_LIGHT_SENSOR);
-		}
-	}
-
+ 
 	private class HandleActivityRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -72,4 +59,11 @@ public class BathActivityRecognition extends SHDeviceAgent {
 		int rnd = new Random().nextInt(supportedActivities.length);
 		return supportedActivities[rnd].toString();
 	}
+
+	@Override
+	protected String getSHService() {
+		return SHParameters.LIGHT_SENSOR;
+	}
+
+ 
 }

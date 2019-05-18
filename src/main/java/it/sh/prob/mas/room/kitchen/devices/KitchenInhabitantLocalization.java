@@ -5,8 +5,8 @@ import java.util.Random;
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.kitchen.utilities.KitchenLocations;
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -21,26 +21,10 @@ public class KitchenInhabitantLocalization extends SHDeviceAgent {
 	
 	@Override
 	protected void setup() {
-		addBehaviour(new RegisterRelevantSHServices());
+		addBehaviour(new RegisterSHServices(toAID(AgentID.KITCHEN_DF_AID)));
 		addBehaviour(new HandleLocationRequest());
 	}
 
-	
-	
-	
-	
-	private class RegisterRelevantSHServices extends OneShotBehaviour{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void action() {
-			registerRelevantSHServices(SHParameters.KITCHEN_LIGHT_SENSOR);
-		}
-	}
-	
 	
 	private class HandleLocationRequest extends CyclicBehaviour {
 		/**
@@ -69,6 +53,12 @@ public class KitchenInhabitantLocalization extends SHDeviceAgent {
 	protected String generateRandomDeviceValues() {
 		int rnd = new Random().nextInt(supportedLocations.length);
 		return supportedLocations[rnd].toString();
+	}
+
+
+	@Override
+	protected String getSHService() {
+		return SHParameters.LIGHT_SENSOR;
 	}
 	
 }
