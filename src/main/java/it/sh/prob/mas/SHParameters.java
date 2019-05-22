@@ -13,6 +13,7 @@ public final class SHParameters {
 	
 	
 	
+	
 	public final static String LIGHT_ACTUATOR= "LIGHT_ACTUATOR";
 	public final static String LIGHT_SENSOR= "LIGHT_SENSOR";
 	

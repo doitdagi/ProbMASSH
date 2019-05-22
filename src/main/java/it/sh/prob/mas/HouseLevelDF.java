@@ -1,4 +1,4 @@
-package it.sh.prob.mas.room.bathroom;
+package it.sh.prob.mas;
 
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -6,7 +6,7 @@ import jade.domain.df;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-public class BathroomDF extends df {
+public class HouseLevelDF extends df {
 
 	/**
 	 * 
@@ -19,8 +19,8 @@ public class BathroomDF extends df {
 		try {
 			this.addParent(getDefaultDF(), getDescriptionOfThisDF());
 			DFService.register(this, getDefaultDF(), this.getDescriptionOfThisDF());
-		
-		System.out.println("BATH ROOM DF STARTED.....");
+			System.out.println("home DF STARTED.....");
+
 		} catch (FIPAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -2,6 +2,8 @@ package it.sh.prob.mas.utilites;
 
 public final class AgentID {
 
+	public static final String HOUSE_DF_AID = "home_df";
+	
 	public static final String BATHROOM_DF_AID = "bathroom_df";
 	public static final String BATHROOM_NEGOTIATOR_AID ="bathroom_negotiator";
 	public static final String BATHROOM_REASONER_AID ="bathroom_reasoner";

@@ -30,14 +30,15 @@ public class BathReasonerAgent extends SHReasonerAgent {
 
 		@Override
 		public void action() {
- 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 			ACLMessage userRequest = myAgent.receive(mt);
 			if (userRequest != null) {
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
-					reasonAboutLight(myAgent,SHParameters.LIGHT_SENSOR,SHParameters.LIGHT_ACTUATOR, toAID(AgentID.BATHROOM_DF_AID) );
- 					break;
+					reasonAboutLight(myAgent, UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,
+							SHParameters.LIGHT_ACTUATOR, toAID(AgentID.BATHROOM_DF_AID));
+					break;
 //				case HEAT_UP_THE_ROOM:
 //					System.out.println("heat up the room command");
 //					break;
@@ -49,6 +50,11 @@ public class BathReasonerAgent extends SHReasonerAgent {
 
 		}
 
+	}
+
+	@Override
+	protected String getNegotiatorAgentID() {
+		return AgentID.BATHROOM_NEGOTIATOR_AID;
 	}
 
 }

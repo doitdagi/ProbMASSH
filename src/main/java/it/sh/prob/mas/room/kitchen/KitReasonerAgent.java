@@ -37,7 +37,7 @@ public class KitReasonerAgent extends SHReasonerAgent{
 					UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 					switch (userCommand) {
 					case TURN_ON_LIGHT:
-						reasonAboutLight(myAgent,SHParameters.LIGHT_SENSOR,SHParameters.LIGHT_ACTUATOR, toAID(AgentID.KITCHEN_DF_AID));
+						reasonAboutLight(myAgent,UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,SHParameters.LIGHT_ACTUATOR, toAID(AgentID.KITCHEN_DF_AID));
 					   break;
 ////					case HEAT_UP_THE_ROOM:
 ////						System.out.println("heat up the room command");
@@ -50,6 +50,11 @@ public class KitReasonerAgent extends SHReasonerAgent{
 
 			}
 
+		}
+		
+		@Override
+		protected String getNegotiatorAgentID() {
+			return AgentID.KITCHEN_NEGOTIATOR_AID;
 		}
 
 }

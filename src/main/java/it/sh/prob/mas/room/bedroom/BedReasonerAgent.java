@@ -20,7 +20,7 @@ public class BedReasonerAgent extends SHReasonerAgent{
 	}
 	
 	// TODO: I AM WORKING ONLY ON THE USER COMMAND NOW
-	// wait for user command or change in environment parameters
+	// wait for user command or change in environment parametersBedroomSensorsBedroomSensors
 	private class ReasoningBehavior extends CyclicBehaviour {
 		/**
 		 * 
@@ -35,7 +35,7 @@ public class BedReasonerAgent extends SHReasonerAgent{
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
-					reasonAboutLight(myAgent,SHParameters.LIGHT_SENSOR,SHParameters.LIGHT_ACTUATOR, toAID(AgentID.BEDROOM_DF_AID));
+					reasonAboutLight(myAgent,UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,SHParameters.LIGHT_ACTUATOR, toAID(AgentID.BEDROOM_DF_AID));
 					break;
 ////				case HEAT_UP_THE_ROOM:
 ////					System.out.println("heat up the room command");
@@ -47,5 +47,10 @@ public class BedReasonerAgent extends SHReasonerAgent{
 			}
 		}
 
+	}
+	
+	@Override
+	protected String getNegotiatorAgentID() {
+		return AgentID.BEDROOM_NEGOTIATOR_AID;
 	}
 }

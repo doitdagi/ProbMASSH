@@ -3,9 +3,9 @@ package it.sh.prob.mas.room.kitchen.utilities;
 import it.sh.prob.mas.ISHSensors;
 
 public enum KitchenSensors implements ISHSensors{
-	   INHABITANTACTIVITY,
-	   LUMINOSITY,
-	   INHABITANTLOCALIZATION;
+	activity, // INHABITANTACTIVITY,
+	luminosity, // LUMINOSITY,
+	location; // INHABITANTLOCALIZATION;
 
 	@Override
 	public ISHSensors[] getServices() {

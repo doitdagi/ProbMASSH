@@ -1,5 +1,8 @@
 package it.sh.prob.mas.room.kitchen.devices;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.kitchen.utilities.KitchenLights;
@@ -17,6 +20,12 @@ public class KitchenLightController extends SHDeviceAgent {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static List<String> services = new ArrayList<String>();
+	
+	static {
+		services.add(SHParameters.LIGHT_ACTUATOR);
+	}
+	
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.KITCHEN_DF_AID)));
@@ -76,8 +85,8 @@ public class KitchenLightController extends SHDeviceAgent {
 	}
 
 	@Override
-	protected String getSHService() {
-		return SHParameters.LIGHT_ACTUATOR;
+	protected List<String> getSHService() {
+		return services;
 	}
 
 	@Override

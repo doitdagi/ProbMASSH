@@ -10,10 +10,10 @@ package it.sh.prob.mas;
  *
  */
 public enum SHSensors implements ISHSensors{
-	   INHABITANTACTIVITY,
-	   LUMINOSITY,
-	   INHABITANTLOCALIZATION,
-	   TEMPERATURE;
+	   activity, // Inhabitant activity
+	   luminosity, //LUMINOSITY,
+	   location,  //INHABITANTLOCALIZATION,
+	   temperature;  //TEMPERATURE;
 	
 	
 	@Override

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import it.sh.prob.mas.room.bathroom.utilites.BathroomLights;
+import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
@@ -23,11 +24,11 @@ public class SHReasonerAgent extends SHAgent {
 	 */
 	private static final long serialVersionUID = 1L;
 
- 
 	/**
 	 * Reason about lighting of the room
 	 * 
 	 * @param myAgent     the reasoner agent
+	 * @param usrCMD      The user command
 	 * @param sensor      The kind of sensor it needs to monitor to perform the
 	 *                    reasoning
 	 * @param actuator    The actuator it needs to control
@@ -35,55 +36,134 @@ public class SHReasonerAgent extends SHAgent {
 	 *                    data from sensors and to control the parameters of the
 	 *                    actuator
 	 */
-	protected void reasonAboutLight(Agent myAgent, String sensor, String actuator, AID local_DF_ID) {
+	protected void reasonAboutLight(Agent myAgent, UserCommands usrCMD, String sensor, String actuator,
+			AID local_DF_ID) {
 		List<AID> sensorDataProviders;
+		List<ACLMessage> informationList = new ArrayList<ACLMessage>();
 		sensorDataProviders = getSensorDataProviders(sensor, myAgent, local_DF_ID);
-		if (sensorDataProviders.isEmpty()) {
-			String problogModel = buildProblogModel(SHParameters.LIGHT, null);
-			String selectedCMD = runProlog(problogModel);
-			// Send command for the actuator device
-			AID lightController = getDeviceControllerAgent(actuator, myAgent, local_DF_ID);
-			ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
-			cmd.addReceiver(lightController);
-			cmd.setContent(selectedCMD);
-			myAgent.send(cmd);
-		} else {
-			// send request for service provider agents
-			System.out.println("Not empty :"+ sensorDataProviders.size());
-			ACLMessage requestInformation = new ACLMessage(ACLMessage.REQUEST);
-			for (AID aid : sensorDataProviders) {
-				requestInformation.addReceiver(aid);
-				requestInformation.setContent("");
-				myAgent.send(requestInformation);
-
-			}
-			// WAIT UNTIL ALL PROVIDERS REPIES
-			List<ACLMessage> informationList = new ArrayList<ACLMessage>();
-			MessageTemplate infoMT;
-			for (AID aid : sensorDataProviders) {
-				infoMT = MessageTemplate.MatchSender(aid);
-				ACLMessage reply = myAgent.blockingReceive(infoMT);
-				informationList.add(reply);
-			}
-
-			// BUILD THE PROBLOG MODEL
-			String problogModel = buildProblogModel(SHParameters.LIGHT, informationList);
-			String selectedCMD = runProlog(problogModel);
-
-			// Send command for the actuator device
-			AID lightController = getDeviceControllerAgent(actuator, myAgent, local_DF_ID);
-			ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
-			cmd.addReceiver(lightController);
-			cmd.setContent(selectedCMD);
-			System.out.println("KONJO:" + selectedCMD);
-			myAgent.send(cmd);
+		/*
+		 * if (sensorDataProviders.isEmpty()) { //TODO THIS CLAUSE IS NOT NECESSIARLY
+		 * ...AT LEAST FIRST YOU HAVE TO CHECK DATA AVALIABLITY FROM OTHER AGENTS String
+		 * problogModel = buildProblogModel(SHParameters.LIGHT, informationList); String
+		 * selectedCMD = runProlog(problogModel); // Send command for the actuator
+		 * device AID lightController = getDeviceControllerAgent(actuator, myAgent,
+		 * local_DF_ID); ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
+		 * cmd.addReceiver(lightController); cmd.setContent(selectedCMD);
+		 * myAgent.send(cmd); } else {
+		 */
+		// send request for service provider agents
+		ACLMessage requestInformation = new ACLMessage(ACLMessage.REQUEST);
+		for (AID aid : sensorDataProviders) {
+			requestInformation.addReceiver(aid);
+			requestInformation.setContent("");
+			myAgent.send(requestInformation);
+		}
+		// WAIT UNTIL ALL PROVIDERS REPIES
+		MessageTemplate infoMT;
+		for (AID aid : sensorDataProviders) {
+			infoMT = MessageTemplate.MatchSender(aid);
+			ACLMessage reply = myAgent.blockingReceive(infoMT);
+			informationList.add(reply);
 		}
 
+		// Interact other room agents
+		List<String> missingInformation = getMissingInformation(informationList, usrCMD);
+
+		if (!missingInformation.isEmpty()) {
+			for (String mi : missingInformation) {
+				System.out.println("MISSING INFORATION" + mi);
+				ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
+				requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
+				requestmInfo.setContent(mi);
+				myAgent.send(requestmInfo);
+			}
+
+			// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
+			MessageTemplate negoReplyTemplate = MessageTemplate.MatchSender(toAID(getNegotiatorAgentID()));
+			for (int i = 0; i < missingInformation.size(); i++) {
+				ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
+				if (msg.getPerformative() == ACLMessage.INFORM) {
+					informationList.add(msg);
+				}
+			}
+		}
+
+
+//				for (String mi : missingInformation) {
+//					System.out.println("mISSING INFORMATION IS:"+mi);
+//					List<AID> globalServiceProviders = getGlobalSensorDataProviders(mi, myAgent,toAID(AgentID.HOUSE_DF_AID),getNegotiatorAgentID());
+//									for (AID aid : globalServiceProviders) {
+//										System.out.println("service provider id:"+aid);
+//						requestInformation.addReceiver(aid);
+//						requestInformation.setContent("");
+//						myAgent.send(requestInformation);
+//					}
+		/*
+		 * for (AID aid : globalServiceProviders) { infoMT =
+		 * MessageTemplate.MatchSender(aid); ACLMessage reply =
+		 * myAgent.blockingReceive(infoMT); informationList.add(reply); }
+		 */
+//				}
+
+		/*
+		 * }
+		 * 
+		 * // BUILD THE PROBLOG MODEL String problogModel =
+		 * buildProblogModel(SHParameters.LIGHT, informationList); String selectedCMD =
+		 * runProlog(problogModel);
+		 * 
+		 * // Send command for the actuator device AID lightController =
+		 * getDeviceControllerAgent(actuator, myAgent, local_DF_ID); ACLMessage cmd =
+		 * new ACLMessage(ACLMessage.INFORM); cmd.addReceiver(lightController);
+		 * cmd.setContent(selectedCMD); System.out.println("KONJO:" + selectedCMD);
+		 * myAgent.send(cmd);
+		 */
+//		}
+
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private List<String> getMissingInformation(List<ACLMessage> informationList, UserCommands usrCMD) {
+		List<String> missingData = new ArrayList<String>();
+		List<String> essentialSensors = getEssentialSensors(usrCMD);
+		for (String sensor : essentialSensors) {
+			boolean sensorDataRecived = false;
+			for (ACLMessage info : informationList) {
+				if (info.getContent().contains(sensor)) {
+					sensorDataRecived = true;
+					break;
+				}
+			}
+			if (!sensorDataRecived) {
+				missingData.add(sensor);
+			}
+
+		}
+
+		return missingData;
+	}
+
+	private List<String> getEssentialSensors(UserCommands usrCMD) {
+		List<String> sensors = new ArrayList<String>();
+		switch (usrCMD) {
+		case TURN_ON_LIGHT:
+			sensors.add(SHSensors.activity.toString());
+			sensors.add(SHSensors.location.toString());
+			sensors.add(SHSensors.luminosity.toString());
+			break;
+
+		default:
+			break;
+		}
+
+		return sensors;
 	}
 
 	protected String buildProblogModel(String service, List<ACLMessage> informationList) {
 		String model = "";
-		System.out.println("INFORMATION LIST SIE"+informationList==null);
 		for (ACLMessage aclMessage : informationList) {
 			model = model + aclMessage.getContent() + "\n";
 		}
@@ -151,6 +231,12 @@ public class SHReasonerAgent extends SHAgent {
 			break;
 		}
 		return query;
+	}
+
+	@Override
+	protected List<String> getSHService() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

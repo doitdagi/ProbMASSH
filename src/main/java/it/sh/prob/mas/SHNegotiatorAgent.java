@@ -2,53 +2,24 @@ package it.sh.prob.mas;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import it.sh.prob.mas.utilites.AgentID;
 import jade.core.AID;
-import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-  
-public abstract class SHNegotiatorAgent extends SHAgent{
+
+public abstract class SHNegotiatorAgent extends SHAgent {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	protected abstract AID getMyReasonerAID();
 
 	protected abstract ISHSensors[] getSupportedServices();
 
-	
-	/**
-	 * Register the services that this agent can provide
-	 * 
-	 * @author fd
-	 *
-	 */
-	protected class RegisterGlobalServices extends OneShotBehaviour {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public RegisterGlobalServices() {
-		}
-
-		@Override
-		public void action() {
-			registerGlobalServices(getAID(), getSupportedServices());
-		}
-	}
-	
-	
-	
 	/**
 	 * This behavior is for requesting information from other Negotiation agents in
 	 * other room
@@ -59,7 +30,8 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 	protected class InitiatorBehaviour extends CyclicBehaviour {
 		/**
 		 */
-		//TODO: CHECK IF THE VARIABLES KEEP THEIR VALUES FOR FUTURE INTERACTION ALSO, THEY SHOULD NOT
+		// TODO: CHECK IF THE VARIABLES KEEP THEIR VALUES FOR FUTURE INTERACTION ALSO,
+		// THEY SHOULD NOT
 		private static final long serialVersionUID = 1L;
 		private SHSensors requestedData;
 		private List<AID> serviceProviders;
@@ -67,40 +39,45 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 		int numberOfReplies;
 		private List<ACLMessage> replyList;
 		private ACLMessage response;
-		private MessageTemplate mt_rq = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-		private MessageTemplate mt_inform = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+
+		private MessageTemplate mt_re_reasoner = MessageTemplate.and(MessageTemplate.MatchSender(getMyReasonerAID()),
+				MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
 		private MessageTemplate mt_refuse = MessageTemplate.MatchPerformative(ACLMessage.REFUSE);
+		private MessageTemplate mt_propose = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
+				MessageTemplate.MatchProtocol("Contract-Net"));
 
 		public InitiatorBehaviour() {
 		}
 
 		@Override
 		public void action() {
-			ACLMessage msg_rq = myAgent.receive(mt_rq);
-			ACLMessage msg_inform = myAgent.receive(mt_inform);
+			ACLMessage msg_rq = myAgent.receive(mt_re_reasoner);
+			ACLMessage msg_propose = myAgent.receive(mt_propose);
 			ACLMessage msg_refuse = myAgent.receive(mt_refuse);
+
 			if (msg_rq != null) {
 				requestedData = SHSensors.valueOf(msg_rq.getContent());
 				numberOfReplies = 0; // reset no of replies for each request
 				replyList = new ArrayList<ACLMessage>();
-				serviceProviders = getGlobalServiceProviders(requestedData, myAgent);
+				serviceProviders = getSensorDataProviders(requestedData.toString(), myAgent,
+						toAID(AgentID.HOUSE_DF_AID));
 				if (serviceProviders.isEmpty()) {
 					response = new ACLMessage(ACLMessage.FAILURE);
 					response.addReceiver(getMyReasonerAID());
 					myAgent.send(response);
 				} else {
-					//TODO: CHECK IF IT IS POSSIBLE TO HAVE MANY RECIVER FOR A SINGLE MESSAGE
-					ACLMessage request_data = new ACLMessage(ACLMessage.REQUEST);
+					ACLMessage request_data = new ACLMessage(ACLMessage.CFP);
 					for (int i = 0; i < serviceProviders.size(); i++) {
 						request_data.addReceiver(serviceProviders.get(i));
 					}
 					request_data.setContent(requestedData.toString());
-					//TODO: DO WE NEED DEADLINES 
+					// TODO: DO WE NEED DEADLINES
 					// request.setReplyByDate(DEADLINE); you can set deadline here
 					myAgent.send(request_data);
 				}
-			} else if (msg_inform != null) {
-				replyList.add(msg_inform);
+	
+			} else if (msg_propose != null) {
+				replyList.add(msg_propose);
 				numberOfReplies++;
 				if (numberOfReplies == serviceProviders.size()) {
 					processedResult = processedResult(requestedData, replyList);
@@ -112,12 +89,12 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 
 			} else if (msg_refuse != null) {
 				numberOfReplies++;
-				if(numberOfReplies==serviceProviders.size()) {
-					if(replyList.isEmpty()) { //if there is no reply send failure
+				if (numberOfReplies == serviceProviders.size()) {
+					if (replyList.isEmpty()) { // if there is no reply send failure
 						response = new ACLMessage(ACLMessage.FAILURE);
 						response.addReceiver(getMyReasonerAID());
-						myAgent.send(response);		
-					}else {
+						myAgent.send(response);
+					} else {
 						processedResult = processedResult(requestedData, replyList);
 						ACLMessage informReasoner = new ACLMessage(ACLMessage.INFORM);
 						informReasoner.addReceiver(getMyReasonerAID());
@@ -148,159 +125,62 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 		private String processedResult;
 		private int numberOfReplies;
 		private List<ACLMessage> replyList;
-		MessageTemplate mt_request = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-		MessageTemplate mt_inform = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-		
+
+		private MessageTemplate mt_cfp = MessageTemplate.and(
+				MessageTemplate.not(MessageTemplate.MatchSender(getMyReasonerAID())),
+				MessageTemplate.MatchPerformative(ACLMessage.CFP));
+
+		private MessageTemplate mt_inform = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+				MessageTemplate.MatchProtocol("fipa-request"));
+
 		public ParticipantBehaviour() {
 		}
 
 		@Override
 		public void action() {
-			ACLMessage msg_request = myAgent.receive(mt_request);
+			ACLMessage msg_cfp = myAgent.receive(mt_cfp);
 			ACLMessage msg_inform = myAgent.receive(mt_inform);
-			if(msg_request != null) {
+			if (msg_cfp != null) {
 				replyList = new ArrayList<ACLMessage>();
-				numberOfReplies =0;
-				senderAgent = msg_request.getSender();
-				requestedData = SHSensors.valueOf(msg_request.getContent());
-				localDataProviders = getLocalDataProviders(getAID(), requestedData, myAgent);
-				if(localDataProviders.isEmpty()) {
-					ACLMessage responseMSG = new ACLMessage(ACLMessage.REFUSE);
-					responseMSG.addReceiver(senderAgent);
+				numberOfReplies = 0;
+				senderAgent = msg_cfp.getSender();
+				requestedData = SHSensors.valueOf(msg_cfp.getContent());
+				localDataProviders = getSensorDataProviders(requestedData.toString(), myAgent, get_Local_df_ID());
+				if (localDataProviders.isEmpty()) {
+					ACLMessage responseMSG = msg_cfp.createReply();
+					responseMSG.setPerformative(ACLMessage.REFUSE);
 					myAgent.send(responseMSG);
-				}else {
+				} else {
 					ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
-					//TODO: CHECK LOOP LESS THAN OR EQUAL TO OR LESS THAN
 					for (int i = 0; i < localDataProviders.size(); i++) {
 						request.addReceiver(localDataProviders.get(i));
 					}
 					request.setContent(requestedData.toString());
-					//TODO: DO WE NEED DEADLINES
-					//request.setReplyByDate(date);
+					// TODO: DO WE NEED DEADLINES
+					// request.setReplyByDate(date);
 					myAgent.send(request);
 				}
-			}else if(msg_inform != null) {
+			} else if (msg_inform != null) {
 				replyList.add(msg_inform);
 				numberOfReplies++;
 				if (numberOfReplies == localDataProviders.size()) {
 					processedResult = processedResult(requestedData, replyList);
-					ACLMessage responseMSG = new ACLMessage(ACLMessage.INFORM);
+					ACLMessage responseMSG = new ACLMessage(ACLMessage.PROPOSE);
 					responseMSG.addReceiver(senderAgent);
 					responseMSG.setContent(processedResult);
+					responseMSG.setProtocol("Contract-Net");
 					myAgent.send(responseMSG);
 				}
-			}else {
+			} else {
 				block();
 			}
 		}
 	}
 
-	
-	
-	
-	/**
-	 * register global services which can be located by the negotiator agents The
-	 * service id of globally accessible services are constructed as SERIVICE_NAME
-	 * Only
-	 * 
-	 * @param agentID
-	 * @param services
-	 */
-	protected void registerGlobalServices(AID agentID, ISHSensors[] sensors) {
-		String sensor;
-		ServiceDescription sd;
-		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(agentID);
-		for (int i = 0; i < sensors.length; i++) {
-			sensor = sensors[i].toString();
-			sd = new ServiceDescription();
-			sd.setName(sensor);
-			sd.setType(sensor);
-			dfd.addServices(sd);
-		}
-		try {
-			DFService.register(this, dfd);
-		} catch (FIPAException fe) {
-			fe.printStackTrace();
-		}
-	}
-	
-	
-	
-	/**
-	 * The global services can be located with service id (service name) without
-	 * location
-	 * 
-	 * @param sensor
-	 * @param myAgent
-	 * @return
-	 */
-	protected List<AID> getGlobalServiceProviders(SHSensors sensor, Agent myAgent) {
-		List<AID> serviceProviders = new ArrayList<AID>();
-		DFAgentDescription template = new DFAgentDescription();
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType(sensor.toString());
-		sd.setName(sensor.toString());
-		template.addServices(sd);
-		try {
-			DFAgentDescription[] result = DFService.search(myAgent, template);
-			if (result != null) {
-				for (int i = 0; i < result.length; i++) {
-					if (!(myAgent.getAID().equals(result[i].getName()))) {
-						serviceProviders.add(result[i].getName());
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return serviceProviders;
+	protected AID get_Local_df_ID() {
+		return null;
 	}
 
-	
-
-	/**
-	 * Look for local(room level) service provider agents in the JADE Yellow page
-	 * 
-	 * @param agentID The ID of the agent look for services
-	 * @param service The required service
-	 * @return
-	 */
-	protected List<AID> getLocalDataProviders(AID agentID, SHSensors sensor, Agent myAgent) {
-		List<AID> serviceProviders = new ArrayList<AID>();
-		DFAgentDescription template = new DFAgentDescription();
-		ServiceDescription sd = new ServiceDescription();
-		sd.setName(getServiceName(agentID, sensor));
-		sd.setType(getServiceName(agentID, sensor));
-		template.addServices(sd);
-		try {
-			DFAgentDescription[] result = DFService.search(myAgent, template);
-			if ((result != null) && (result.length > 0)) {
-				for (int i = 0; i < result.length; i++) {
-					serviceProviders.add(result[i].getName());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
- 		return serviceProviders;
-	}
-	
-	
-	/**
-	 * Given agent id retrieve the agent location
-	 * 
-	 * @return
-	 */
-	private String getAgentLocation(AID agentID) {
-		return agentID.getName().split("_")[0];
-	}
-
-	private String getServiceName(AID agentID, SHSensors sensor) {
-		return getAgentLocation(agentID)+"_" +sensor.toString();
-	}
-
-	
 	/**
 	 * Process message
 	 * 
@@ -311,31 +191,27 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 		return msgList.get(0).toString();
 	}
 
-	
-	
 	protected String processedResult(SHSensors sensor, List<ACLMessage> responseList) {
-		String processedResult="";
+		String processedResult = "";
 		switch (sensor) {
-		case INHABITANTACTIVITY:
-			  processedResult = processInhabitantActivity(responseList);
+		case activity:
+			processedResult = processInhabitantActivity(responseList);
 			break;
-		case  LUMINOSITY:
+		case luminosity:
 			processedResult = processLuminosity(responseList);
 			break;
-		case INHABITANTLOCALIZATION:
+		case location:
 			processedResult = processInhabitatantLocation(responseList);
 			break;
-		case TEMPERATURE:
-				processedResult = processTemp(responseList);
+		case temperature:
+			processedResult = processTemp(responseList);
 			break;
 		default:
 			break;
 		}
 		return processedResult;
 	}
-	
 
-	
 	/**
 	 * Process message
 	 * 
@@ -343,10 +219,13 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 	 * @return
 	 */
 	protected String processLuminosity(List<ACLMessage> msgList) {
+		if (msgList.size() == 1) {
+			return msgList.get(0).getContent();
+		}
+		// TODO
 		return null;
 	}
 
-	
 	/**
 	 * Process message
 	 * 
@@ -354,8 +233,14 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 	 * @return
 	 */
 	protected String processInhabitatantLocation(List<ACLMessage> msgList) {
+		if (msgList.size() == 1) {
+			return msgList.get(0).getContent();
+		}
+
+		// TODO
 		return null;
 	}
+
 	/**
 	 * Process message
 	 * 
@@ -363,8 +248,13 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 	 * @return
 	 */
 	protected String processInhabitantActivity(List<ACLMessage> msgList) {
+		if (msgList.size() == 1) {
+			return msgList.get(0).getContent();
+		}
+		// TODO
 		return null;
 	}
+
 	/**
 	 * Process message
 	 * 
@@ -372,7 +262,10 @@ public abstract class SHNegotiatorAgent extends SHAgent{
 	 * @return
 	 */
 	protected String processLight(List<ACLMessage> msgList) {
+		if (msgList.size() == 1) {
+			return msgList.get(0).getContent();
+		}
 		return null;
 	}
-	
+
 }

@@ -35,7 +35,7 @@ public class LRReasonerAgent extends SHReasonerAgent {
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
-					reasonAboutLight(myAgent, SHParameters.LIGHT_SENSOR,
+					reasonAboutLight(myAgent,UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,
 							SHParameters.LIGHT_ACTUATOR,
 							toAID(AgentID.LIVINGROOM_DF_AID));
 					break;
@@ -49,5 +49,10 @@ public class LRReasonerAgent extends SHReasonerAgent {
 			}
 
 		}
+	}
+	
+	@Override
+	protected String getNegotiatorAgentID() {
+		return AgentID.LIVINGROOM_NEGOTIATOR_AID;
 	}
 }

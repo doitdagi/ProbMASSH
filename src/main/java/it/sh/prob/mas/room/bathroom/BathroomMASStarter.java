@@ -55,6 +55,7 @@ public class BathroomMASStarter extends MASStarter {
 
 		if (isMain) {
 			ac = jade.core.Runtime.instance().createMainContainer(p);
+			memberAgents.put(AgentID.HOUSE_DF_AID, "it.sh.prob.mas.HouseLevelDF");
 		} else {
 			p.setParameter(Profile.MAIN_HOST, HOST_ADDRESS);
 			p.setParameter(Profile.MAIN_PORT, HOST_PORT);
@@ -70,6 +71,7 @@ public class BathroomMASStarter extends MASStarter {
 				e.printStackTrace();
 			}
 		}
+		
 		System.out.println("Sucessfully started...");
 	}
 
@@ -86,7 +88,6 @@ public class BathroomMASStarter extends MASStarter {
 				"it.sh.prob.mas.room.bathroom.devices.BathInhabitantLocalization");
 		memberAgents.put(AgentID.BATHROOM_LIGHT_CONTROLLER_AID,
 				"it.sh.prob.mas.room.bathroom.devices.BathLightController");
-
 	}
 
 }

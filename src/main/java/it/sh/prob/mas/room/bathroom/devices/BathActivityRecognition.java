@@ -1,10 +1,13 @@
 package it.sh.prob.mas.room.bathroom.devices;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomInhabitantActivitityValues;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
 import it.sh.prob.mas.utilites.AgentID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -16,16 +19,28 @@ public class BathActivityRecognition extends SHDeviceAgent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final BathroomInhabitantActivitityValues[] supportedActivities = BathroomInhabitantActivitityValues.values();
+	private static final BathroomInhabitantActivitityValues[] supportedActivities = BathroomInhabitantActivitityValues
+			.values();
 
 	private static final String PROBLOG_VARIABLE = "activity";
-	
+
+	private static List<String> services = new ArrayList<String>();
+
+	static {
+		//THIS IS THE SERVICE THAT THE OUTPUT OF THE DATA FROM THIS SENSOR IS RELEVANT TO
+		//SO THAT THE GENERATED DATA CAN BE USED EASILY BY THE REASONER AGENT
+		services.add(SHParameters.LIGHT_SENSOR);
+		// To be visible for the negotiator agent
+		//THIS IS THE DATA GENERATED FROM THIS SENSOR, THE SERIVCE IS USED BY THE NEOGITATOR AGENT 
+		services.add(BathroomSensors.activity.toString());
+	}
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.BATHROOM_DF_AID)));
 		addBehaviour(new HandleActivityRequest());
 	}
- 
+
 	private class HandleActivityRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -39,6 +54,7 @@ public class BathActivityRecognition extends SHDeviceAgent {
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
+			    reply.setProtocol("fipa-request");
 				reply.setContent(formulateReply(PROBLOG_VARIABLE));
 				myAgent.send(reply);
 			} else {
@@ -61,9 +77,15 @@ public class BathActivityRecognition extends SHDeviceAgent {
 	}
 
 	@Override
-	protected String getSHService() {
-		return SHParameters.LIGHT_SENSOR;
+	protected List<String> getSHService() {
+		return services;
 	}
 
- 
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.BATHROOM_DF_AID));
+
+	}
+
 }

@@ -55,6 +55,7 @@ public class KitchenMASStarter extends MASStarter{
 
 		if (isMain) {
 			ac = jade.core.Runtime.instance().createMainContainer(p);
+			memberAgents.put(AgentID.HOUSE_DF_AID, "it.sh.prob.mas.HouseLevelDF");
 		} else {
 			p.setParameter(Profile.MAIN_HOST, HOST_ADDRESS);
 			p.setParameter(Profile.MAIN_PORT, HOST_PORT);

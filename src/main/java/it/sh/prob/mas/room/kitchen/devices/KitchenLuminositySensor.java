@@ -1,10 +1,13 @@
 package it.sh.prob.mas.room.kitchen.devices;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import it.sh.prob.mas.SHDeviceAgent;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.kitchen.utilities.KitchenLumValues;
+import it.sh.prob.mas.room.kitchen.utilities.KitchenSensors;
 import it.sh.prob.mas.utilites.AgentID;
 import jade.core.AID;
 import jade.core.Agent;
@@ -20,7 +23,14 @@ public class KitchenLuminositySensor extends SHDeviceAgent {
 		 */
 		private static final long serialVersionUID = 1L;
 		private static final KitchenLumValues[] lumValues = KitchenLumValues.values();
-		private static final String PROBLOG_VARIABLE = "luminicity";
+		private static final String PROBLOG_VARIABLE = "luminosity";
+		private static List<String> services = new ArrayList<String>();
+		
+		static {
+			services.add(SHParameters.LIGHT_SENSOR);
+			services.add(KitchenSensors.luminosity.toString());
+
+		}
 		@Override
 		protected void setup() {
 			addBehaviour(new RegisterSHServices(toAID(AgentID.KITCHEN_DF_AID)));
@@ -82,8 +92,14 @@ public class KitchenLuminositySensor extends SHDeviceAgent {
 		}
 
 		@Override
-		protected String getSHService() {
-			return SHParameters.LIGHT_SENSOR;
+		protected List<String> getSHService() {
+			return services;
 		}
+		 @Override
+		 protected void takeDown() {
+		 	super.takeDown();
+		 	unregisterSHServices(toAID(AgentID.KITCHEN_DF_AID));
+		  
+		  }
 
 	}
