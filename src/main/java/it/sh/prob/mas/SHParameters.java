@@ -11,8 +11,7 @@ public final class SHParameters {
 	public final static String LIGHT = "LIGHT";
 	public final static String TEMPERATURE = "TEMPERATURE";
 	
-	
-	
+	 
 	
 	public final static String LIGHT_ACTUATOR= "LIGHT_ACTUATOR";
 	public final static String LIGHT_SENSOR= "LIGHT_SENSOR";

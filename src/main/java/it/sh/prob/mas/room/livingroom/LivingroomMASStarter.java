@@ -80,6 +80,10 @@ public class LivingroomMASStarter extends MASStarter{
 		memberAgents.put(AgentID.LIVINGROOM_LUMINIOSITY_SENSOR_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomLuminositySensor");
 		memberAgents.put(AgentID.LIVINGROOM_ACTIVITIY_RECOGNITION_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomActivityRecognition");
 		memberAgents.put(AgentID.LIVINGROOM_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomInhabitantLocalization");
+		memberAgents.put(AgentID.LIVINGROOM_TEMPERATURE_SENSOR_AID,
+				"it.sh.prob.mas.room.livingroom.devices.LivingroomTempSensor");
+
+		
 		memberAgents.put(AgentID.LIVINGROOM_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomLightController");
 	}
 

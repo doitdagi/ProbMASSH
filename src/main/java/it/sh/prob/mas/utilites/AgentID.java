@@ -11,7 +11,7 @@ public final class AgentID {
 	public static final String BATHROOM_ACTIVITIY_RECOGNITION_AID ="bathroom_activity_recognition_sensor";
 	public static final String BATHROOM_INHABITANT_LOCALIZATION_SENSOR_AID ="bathroom_inhabitant_localization_sensor";
 	public static final String BATHROOM_LIGHT_CONTROLLER_AID ="bathroom_light_controller";
-	
+	public static final String BATHROOM_TEMPERATURE_SENSOR_AID ="bathroom_temperature_sensor";
 	
 	
 	
@@ -22,6 +22,7 @@ public final class AgentID {
 	public static final String BEDROOM_LUMINIOSITY_SENSOR_AID ="bedroom_leminosity_sensor";
 	public static final String BEDROOM_ACTIVITIY_RECOGNITION_AID ="bedroom_activity_recognition_sensor";
 	public static final String BEDROOM_INHABITANT_LOCALIZATION_SENSOR_AID ="bedroom_inhabitant_localization_sensor";
+	public static final String BEDROOM_TEMPERATURE_SENSOR_AID ="bedroom_temperature_sensor";
 	public static final String BEDROOM_LIGHT_CONTROLLER_AID ="bedroom_light_controller";
 	
 
@@ -31,6 +32,7 @@ public final class AgentID {
 	public static final String KITCHEN_LUMINIOSITY_SENSOR_AID ="kitchen_leminosity_sensor";
 	public static final String KITCHEN_ACTIVITIY_RECOGNITION_AID ="kitchen_activity_recognition_sensor";
 	public static final String KITCHEN_INHABITANT_LOCALIZATION_SENSOR_AID ="kitchen_inhabitant_localization_sensor";
+	public static final String KITCHEN_TEMPERATURE_SENSOR_AID ="kitchen_temperature_sensor";
 	public static final String KITCHEN_LIGHT_CONTROLLER_AID ="kitchen_light_controller";
 	
 	
@@ -40,6 +42,7 @@ public final class AgentID {
 	public static final String LIVINGROOM_LUMINIOSITY_SENSOR_AID ="livingroom_leminosity_sensor";
 	public static final String LIVINGROOM_ACTIVITIY_RECOGNITION_AID ="livingroom_activity_recognition_sensor";
 	public static final String LIVINGROOM_INHABITANT_LOCALIZATION_SENSOR_AID ="livingroom_inhabitant_localization_sensor";
+	public static final String LIVINGROOM_TEMPERATURE_SENSOR_AID ="livingroom_temperature_sensor";
 	public static final String LIVINGROOM_LIGHT_CONTROLLER_AID ="livingroom_light_controller";
 	
 }

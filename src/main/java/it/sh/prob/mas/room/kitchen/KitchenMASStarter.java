@@ -84,6 +84,11 @@ public class KitchenMASStarter extends MASStarter{
 		memberAgents.put(AgentID.KITCHEN_LUMINIOSITY_SENSOR_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenLuminositySensor");
 		memberAgents.put(AgentID.KITCHEN_ACTIVITIY_RECOGNITION_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenActivityRecognition");
 		memberAgents.put(AgentID.KITCHEN_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenInhabitantLocalization");
+		memberAgents.put(AgentID.KITCHEN_TEMPERATURE_SENSOR_AID,
+				"it.sh.prob.mas.room.kitchen.devices.KitchenTempSensor");
+
+		
+		
 		
 		memberAgents.put(AgentID.KITCHEN_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.kitchen.devices.KitchenLightController");
 		}

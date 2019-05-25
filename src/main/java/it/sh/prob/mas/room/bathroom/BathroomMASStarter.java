@@ -86,6 +86,10 @@ public class BathroomMASStarter extends MASStarter {
 				"it.sh.prob.mas.room.bathroom.devices.BathActivityRecognition");
 		memberAgents.put(AgentID.BATHROOM_INHABITANT_LOCALIZATION_SENSOR_AID,
 				"it.sh.prob.mas.room.bathroom.devices.BathInhabitantLocalization");
+		memberAgents.put(AgentID.BATHROOM_TEMPERATURE_SENSOR_AID,
+				"it.sh.prob.mas.room.bathroom.devices.BathroomTempSensor");
+
+		//
 		memberAgents.put(AgentID.BATHROOM_LIGHT_CONTROLLER_AID,
 				"it.sh.prob.mas.room.bathroom.devices.BathLightController");
 	}

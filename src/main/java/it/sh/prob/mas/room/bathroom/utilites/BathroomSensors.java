@@ -5,7 +5,8 @@ import it.sh.prob.mas.ISHSensors;
 public enum BathroomSensors implements ISHSensors {
 	activity, // INHABITANTACTIVITY,
 	luminosity, // LUMINOSITY,
-	location; // INHABITANTLOCALIZATION;
+	location, // INHABITANTLOCALIZATION;
+	temperature;
 
 	@Override
 	public BathroomSensors[] getServices() {

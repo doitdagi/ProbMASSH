@@ -82,6 +82,8 @@ public class BedroomMASStarter extends MASStarter{
 		memberAgents.put(AgentID.BEDROOM_LUMINIOSITY_SENSOR_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomLuminositySensor");
 		memberAgents.put(AgentID.BEDROOM_ACTIVITIY_RECOGNITION_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomActivityRecognition");
 		memberAgents.put(AgentID.BEDROOM_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomInhabitantLocalization");
+		memberAgents.put(AgentID.BEDROOM_TEMPERATURE_SENSOR_AID,
+				"it.sh.prob.mas.room.bedroom.devices.BedroomTempSensor");
 		
 		memberAgents.put(AgentID.BEDROOM_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.bedroom.devices.BedroomLightController");
 
