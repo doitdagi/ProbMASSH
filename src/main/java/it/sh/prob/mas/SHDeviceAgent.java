@@ -9,18 +9,13 @@ public abstract class SHDeviceAgent extends SHAgent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected static final String PREFIX = "::";
-
-
-	protected static final String POSTFIX = ").";
 	
 	
 	
 	protected abstract String generateRandomDeviceValues();
 
-
-	private String generateRandomCertaintiyValues() {
- 		   DecimalFormat df2 = new DecimalFormat("#.##");
+	protected String generateRandomCertaintiyValues() {
+		   DecimalFormat df2 = new DecimalFormat("#.##");
 		    return df2.format(Math.random());
 	}
 	

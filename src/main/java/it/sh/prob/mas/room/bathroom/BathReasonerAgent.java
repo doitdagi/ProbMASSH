@@ -2,6 +2,11 @@ package it.sh.prob.mas.room.bathroom;
 
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomInhabitantActivitityValues;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomLocations;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomLumValues;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomTempValues;
 import it.sh.prob.mas.utilites.AgentID;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.behaviours.CyclicBehaviour;
@@ -55,6 +60,29 @@ public class BathReasonerAgent extends SHReasonerAgent {
 	@Override
 	protected String getNegotiatorAgentID() {
 		return AgentID.BATHROOM_NEGOTIATOR_AID;
+	}
+
+	@Override
+	protected String getDefaultValue(String sensorName) {
+		BathroomSensors sensor = BathroomSensors.valueOf(sensorName);
+		String result = "";
+		switch (sensor) {
+		case activity:
+			result = BathroomInhabitantActivitityValues.bathing.toString();
+			break;
+		case location:
+			result = BathroomLocations.zoneone.toString();
+			break;
+		case luminosity:
+			result = BathroomLumValues.bright.toString();
+			break;
+		case temperature:
+			result = BathroomTempValues.hot.toString();
+			break;
+		default:
+			break;
+		}
+		return result;
 	}
 
 }

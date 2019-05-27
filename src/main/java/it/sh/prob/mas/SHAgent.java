@@ -1,5 +1,6 @@
 package it.sh.prob.mas;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,13 @@ public abstract class SHAgent extends Agent {
 	 */
 	private static final long serialVersionUID = 1L;
 
+
+
+	protected static final String PREFIX = "::";
+
+
+	protected static final String POSTFIX = ").";
+	
 	protected abstract List<String> getSHService();
 
 	/**
@@ -131,11 +139,9 @@ public abstract class SHAgent extends Agent {
 		try {
 			DFAgentDescription[] result = DFService.search(myAgent, localDFID, dad);
 			if (result != null) {
-				System.out.println("Not null bro"+sensorName);
 				for (int i = 0; i < result.length; i++) {
 					// TODO: WHY WE NEED THIS CHECK	
-					System.out.println("storing....");
-					if (!(myAgent.getAID().equals(result[i].getName()))) {
+ 					if (!(myAgent.getAID().equals(result[i].getName()))) {
 						sensorDataProviders.add(result[i].getName());
 
 					}
@@ -224,16 +230,13 @@ public abstract class SHAgent extends Agent {
 		dad.addServices(sd);
 		try {
 			DFAgentDescription[] result = DFService.search(myAgent, localDFID, dad);
-			System.out.println("result length" + result.length);
 			if (result.length != 0) {
 				controllerAgentID = result[0].getName();
-				System.out.println("CONTROLLLER AGEENT IS " + controllerAgentID);
 			}
 		} catch (FIPAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("controller name :" + controllerAgentID);
 		return controllerAgentID;
 	}
 
@@ -244,6 +247,11 @@ public abstract class SHAgent extends Agent {
 	}
 	protected String getNegotiatorAgentID(){
 		return null;
+	}
+	
+	protected String generateRandomCertaintiyValues() {
+		   DecimalFormat df2 = new DecimalFormat("#.##");
+		    return df2.format(Math.random());
 	}
 	
 }

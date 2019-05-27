@@ -2,6 +2,11 @@ package it.sh.prob.mas.room.kitchen;
 
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
+import it.sh.prob.mas.room.kitchen.utilities.KitchenInhabitantActivitities;
+import it.sh.prob.mas.room.kitchen.utilities.KitchenLocations;
+import it.sh.prob.mas.room.kitchen.utilities.KitchenLumValues;
+import it.sh.prob.mas.room.kitchen.utilities.KitchenTempValues;
 import it.sh.prob.mas.utilites.AgentID;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.behaviours.CyclicBehaviour;
@@ -57,4 +62,26 @@ public class KitReasonerAgent extends SHReasonerAgent{
 			return AgentID.KITCHEN_NEGOTIATOR_AID;
 		}
 
+		@Override
+		protected String getDefaultValue(String sensorName) {
+			BathroomSensors sensor = BathroomSensors.valueOf(sensorName);
+			String result = "";
+			switch (sensor) {
+			case activity:
+				result = KitchenInhabitantActivitities.cooking.toString();
+				break;
+			case location:
+				result = KitchenLocations.cooking_area.toString();
+				break;
+			case luminosity:
+				result = KitchenLumValues.bright.toString();
+				break;
+			case temperature:
+				result = KitchenTempValues.hot.toString();
+				break;
+			default:
+				break;
+			}
+			return result;
+		}
 }

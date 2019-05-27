@@ -16,7 +16,7 @@ import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class SHReasonerAgent extends SHAgent {
+public abstract class SHReasonerAgent extends SHAgent {
 
 	private static final String BATH_LIGHT_RULE_PATH = "rules/light_rule.pl";
 
@@ -38,20 +38,29 @@ public class SHReasonerAgent extends SHAgent {
 	 */
 	protected void reasonAboutLight(Agent myAgent, UserCommands usrCMD, String sensor, String actuator,
 			AID local_DF_ID) {
-		List<AID> sensorDataProviders;
-		List<ACLMessage> informationList = new ArrayList<ACLMessage>();
-		sensorDataProviders = getSensorDataProviders(sensor, myAgent, local_DF_ID);
-		/*
-		 * if (sensorDataProviders.isEmpty()) { //TODO THIS CLAUSE IS NOT NECESSIARLY
-		 * ...AT LEAST FIRST YOU HAVE TO CHECK DATA AVALIABLITY FROM OTHER AGENTS String
-		 * problogModel = buildProblogModel(SHParameters.LIGHT, informationList); String
-		 * selectedCMD = runProlog(problogModel); // Send command for the actuator
-		 * device AID lightController = getDeviceControllerAgent(actuator, myAgent,
-		 * local_DF_ID); ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
-		 * cmd.addReceiver(lightController); cmd.setContent(selectedCMD);
-		 * myAgent.send(cmd); } else {
-		 */
-		// send request for service provider agents
+		List<String> dataFromLocalProviders = getSensorDataFromLocalProviders(myAgent, sensor, local_DF_ID);
+		List<String> missingInformation = existsMissingData(dataFromLocalProviders, usrCMD);
+		String proLogModel = "";
+		String probLogResult;
+		if (!missingInformation.isEmpty()) {
+			List<String> missingDataFromGlobalProviders = getMissingDataFromGlobalProviders(missingInformation,
+					myAgent);
+			dataFromLocalProviders.addAll(missingDataFromGlobalProviders);
+			missingInformation = existsMissingData(dataFromLocalProviders, usrCMD);
+			if (!missingInformation.isEmpty()) {
+				List<String> defaultValues = getDefaultLocalSensorData(missingInformation, myAgent, local_DF_ID);
+				dataFromLocalProviders.addAll(defaultValues);
+			}
+		}
+		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
+		probLogResult = getProbLogResult(proLogModel);
+		sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
+		System.out.println(probLogResult);
+	}
+
+	private List<String> getSensorDataFromLocalProviders(Agent myAgent, String sensor, AID local_DF_ID) {
+		List<AID> sensorDataProviders = getSensorDataProviders(sensor, myAgent, local_DF_ID);
+		List<String> informationList = new ArrayList<String>();
 		ACLMessage requestInformation = new ACLMessage(ACLMessage.REQUEST);
 		for (AID aid : sensorDataProviders) {
 			requestInformation.addReceiver(aid);
@@ -63,76 +72,19 @@ public class SHReasonerAgent extends SHAgent {
 		for (AID aid : sensorDataProviders) {
 			infoMT = MessageTemplate.MatchSender(aid);
 			ACLMessage reply = myAgent.blockingReceive(infoMT);
-			informationList.add(reply);
+			informationList.add(reply.getContent());
 		}
 
-		// Interact other room agents
-		List<String> missingInformation = getMissingInformation(informationList, usrCMD);
-
-		if (!missingInformation.isEmpty()) {
-			for (String mi : missingInformation) {
-				System.out.println("MISSING INFORATION" + mi);
-				ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
-				requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
-				requestmInfo.setContent(mi);
-				myAgent.send(requestmInfo);
-			}
-
-			// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
-			MessageTemplate negoReplyTemplate = MessageTemplate.MatchSender(toAID(getNegotiatorAgentID()));
-			for (int i = 0; i < missingInformation.size(); i++) {
-				ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
-				if (msg.getPerformative() == ACLMessage.INFORM) {
-					informationList.add(msg);
-				}
-			}
-		}
-
-
-//				for (String mi : missingInformation) {
-//					System.out.println("mISSING INFORMATION IS:"+mi);
-//					List<AID> globalServiceProviders = getGlobalSensorDataProviders(mi, myAgent,toAID(AgentID.HOUSE_DF_AID),getNegotiatorAgentID());
-//									for (AID aid : globalServiceProviders) {
-//										System.out.println("service provider id:"+aid);
-//						requestInformation.addReceiver(aid);
-//						requestInformation.setContent("");
-//						myAgent.send(requestInformation);
-//					}
-		/*
-		 * for (AID aid : globalServiceProviders) { infoMT =
-		 * MessageTemplate.MatchSender(aid); ACLMessage reply =
-		 * myAgent.blockingReceive(infoMT); informationList.add(reply); }
-		 */
-//				}
-
-		/*
-		 * }
-		 * 
-		 * // BUILD THE PROBLOG MODEL String problogModel =
-		 * buildProblogModel(SHParameters.LIGHT, informationList); String selectedCMD =
-		 * runProlog(problogModel);
-		 * 
-		 * // Send command for the actuator device AID lightController =
-		 * getDeviceControllerAgent(actuator, myAgent, local_DF_ID); ACLMessage cmd =
-		 * new ACLMessage(ACLMessage.INFORM); cmd.addReceiver(lightController);
-		 * cmd.setContent(selectedCMD); System.out.println("KONJO:" + selectedCMD);
-		 * myAgent.send(cmd);
-		 */
-//		}
-
+		return informationList;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	private List<String> getMissingInformation(List<ACLMessage> informationList, UserCommands usrCMD) {
+	private List<String> existsMissingData(List<String> localCollectedData, UserCommands usrCMD) {
 		List<String> missingData = new ArrayList<String>();
 		List<String> essentialSensors = getEssentialSensors(usrCMD);
 		for (String sensor : essentialSensors) {
 			boolean sensorDataRecived = false;
-			for (ACLMessage info : informationList) {
-				if (info.getContent().contains(sensor)) {
+			for (String sensorData : localCollectedData) {
+				if (sensorData.contains(sensor)) {
 					sensorDataRecived = true;
 					break;
 				}
@@ -140,10 +92,49 @@ public class SHReasonerAgent extends SHAgent {
 			if (!sensorDataRecived) {
 				missingData.add(sensor);
 			}
-
 		}
 
 		return missingData;
+	}
+
+	private List<String> getMissingDataFromGlobalProviders(List<String> missingInformation, Agent myAgent) {
+		List<String> collectedData = new ArrayList<String>();
+		for (String mi : missingInformation) {
+			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
+			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
+			requestmInfo.setContent(mi);
+			myAgent.send(requestmInfo);
+		}
+
+		// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
+		MessageTemplate negoReplyTemplate = MessageTemplate.MatchSender(toAID(getNegotiatorAgentID()));
+		for (int i = 0; i < missingInformation.size(); i++) {
+			ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
+			if (msg.getPerformative() == ACLMessage.INFORM) {
+				collectedData.add(msg.getContent());
+			}
+		}
+
+		return collectedData;
+	}
+
+	private List<String> getDefaultLocalSensorData(List<String> missingInformation, Agent myAgent, AID local_DF_ID) {
+		List<String> defaultSensorData = new ArrayList<String>();
+		for (String mi : missingInformation) {
+			System.out.println(mi);
+			defaultSensorData.add(formulateDefaultLocalSensorData(mi));
+			System.out.println("Default value for: " + mi + "...." + formulateDefaultLocalSensorData(mi));
+		}
+
+		return defaultSensorData;
+	}
+
+	protected String formulateDefaultLocalSensorData(String variable) {
+		return generateRandomCertaintiyValues() + PREFIX + variable + "(" + getDefaultValue(variable) + POSTFIX;
+	}
+
+	private String getService(String actuator) {
+		return actuator.toString().split("_")[0];
 	}
 
 	private List<String> getEssentialSensors(UserCommands usrCMD) {
@@ -162,10 +153,19 @@ public class SHReasonerAgent extends SHAgent {
 		return sensors;
 	}
 
-	protected String buildProblogModel(String service, List<ACLMessage> informationList) {
+	private void sendActuationCommand(String actuator, String command, Agent myAgent, AID local_DF_ID) {
+		AID lightController = getDeviceControllerAgent(actuator, myAgent, local_DF_ID);
+		ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
+		cmd.addReceiver(lightController);
+		cmd.setContent(command);
+		myAgent.send(cmd);
+
+	}
+
+	protected String buildProblogModel(String service, List<String> informationList) {
 		String model = "";
-		for (ACLMessage aclMessage : informationList) {
-			model = model + aclMessage.getContent() + "\n";
+		for (String info : informationList) {
+			model = model + info + "\n";
 		}
 		switch (service) {
 		case SHParameters.LIGHT:
@@ -188,7 +188,7 @@ public class SHReasonerAgent extends SHAgent {
 		return model;
 	}
 
-	protected String runProlog(String probLogModel) {
+	protected String getProbLogResult(String probLogModel) {
 		String command = "";
 		double value = 0;
 		double newValue = 0;
@@ -239,4 +239,5 @@ public class SHReasonerAgent extends SHAgent {
 		return null;
 	}
 
+	protected abstract String getDefaultValue(String sensorName);
 }

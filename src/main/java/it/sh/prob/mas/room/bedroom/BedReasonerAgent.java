@@ -2,6 +2,11 @@ package it.sh.prob.mas.room.bedroom;
 
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomInhabitantActivitities;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomLocations;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomLumValues;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomSensors;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomTempValues;
 import it.sh.prob.mas.utilites.AgentID;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.behaviours.CyclicBehaviour;
@@ -20,7 +25,7 @@ public class BedReasonerAgent extends SHReasonerAgent{
 	}
 	
 	// TODO: I AM WORKING ONLY ON THE USER COMMAND NOW
-	// wait for user command or change in environment parametersBedroomSensorsBedroomSensors
+	// wait for user command or change in environment parameters 
 	private class ReasoningBehavior extends CyclicBehaviour {
 		/**
 		 * 
@@ -52,5 +57,28 @@ public class BedReasonerAgent extends SHReasonerAgent{
 	@Override
 	protected String getNegotiatorAgentID() {
 		return AgentID.BEDROOM_NEGOTIATOR_AID;
+	}
+
+	@Override
+	protected String getDefaultValue(String sensorName) {
+		BedroomSensors sensor = BedroomSensors.valueOf(sensorName);
+		String result = "";
+		switch (sensor) {
+		case activity:
+			result = BedroomInhabitantActivitities.sleeping.toString();
+			break;
+		case location:
+			result = BedroomLocations.zoneone.toString();
+			break;
+		case luminosity:
+			result = BedroomLumValues.bright.toString();
+			break;
+		case temperature:
+			result = BedroomTempValues.hot.toString();
+			break;
+		default:
+			break;
+		}
+		return result;
 	}
 }
