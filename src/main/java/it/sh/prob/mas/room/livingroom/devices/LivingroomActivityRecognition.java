@@ -24,13 +24,13 @@ public class LivingroomActivityRecognition extends SHDeviceAgent {
 
 	private static final String PROBLOG_VARIABLE = "activity";
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
 		services.add(LivingroomSensors.activity.toString());
 
 	}
-	
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID)));
@@ -75,12 +75,12 @@ public class LivingroomActivityRecognition extends SHDeviceAgent {
 	protected List<String> getSHService() {
 		return services;
 	}
-	
-	 @Override
-	 protected void takeDown() {
-	 	super.takeDown();
-	 	unregisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID));
-	  
-	  }
+
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID));
+
+	}
 
 }

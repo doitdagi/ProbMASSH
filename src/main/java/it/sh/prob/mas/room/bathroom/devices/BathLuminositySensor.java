@@ -22,24 +22,21 @@ public class BathLuminositySensor extends SHDeviceAgent {
 
 	private static final BathroomLumValues[] lumValues = BathroomLumValues.values();
 	private static final String PROBLOG_VARIABLE = "luminosity";
-	
-	
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
-		//To be visible for the negotiator agent 
+		// To be visible for the negotiator agent
 		services.add(BathroomSensors.luminosity.toString());
 	}
-	
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.BATHROOM_DF_AID)));
 		addBehaviour(new HandleLuminosityRequest());
 //		addBehaviour(new InformCurrentLumionisity(this, 1000));
 	}
- 
-	
 
 	private class HandleLuminosityRequest extends CyclicBehaviour {
 		/**
@@ -64,7 +61,6 @@ public class BathLuminositySensor extends SHDeviceAgent {
 
 	}
 
-
 	@Override
 	protected String generateRandomDeviceValues() {
 		int rnd = new Random().nextInt(lumValues.length);
@@ -76,11 +72,11 @@ public class BathLuminositySensor extends SHDeviceAgent {
 		return services;
 	}
 
- @Override
-protected void takeDown() {
-	super.takeDown();
-	unregisterSHServices(toAID(AgentID.BATHROOM_DF_AID));
- 
- }
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.BATHROOM_DF_AID));
+
+	}
 
 }

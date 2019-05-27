@@ -21,24 +21,21 @@ public class LivingroomTempSensor extends SHDeviceAgent {
 
 	private static final LivingroomTempValues[] tempValues = LivingroomTempValues.values();
 	private static final String PROBLOG_VARIABLE = "temperature";
-	
-	
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.TEMPERATURE);
-		//To be visible for the negotiator agent 
+		// To be visible for the negotiator agent
 		services.add(LivingroomSensors.temperature.toString());
 	}
-	
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID)));
 		addBehaviour(new HandleTemperatureRequest());
 //		addBehaviour(new InformCurrentLumionisity(this, 1000));
 	}
- 
-	
 
 	private class HandleTemperatureRequest extends CyclicBehaviour {
 		/**
@@ -63,7 +60,6 @@ public class LivingroomTempSensor extends SHDeviceAgent {
 
 	}
 
-
 	@Override
 	protected String generateRandomDeviceValues() {
 		int rnd = new Random().nextInt(tempValues.length);
@@ -75,10 +71,10 @@ public class LivingroomTempSensor extends SHDeviceAgent {
 		return services;
 	}
 
- @Override
-protected void takeDown() {
-	super.takeDown();
-	unregisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID));
- }
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID));
+	}
 
 }

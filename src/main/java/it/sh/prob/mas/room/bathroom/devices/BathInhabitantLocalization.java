@@ -21,12 +21,12 @@ public class BathInhabitantLocalization extends SHDeviceAgent {
 
 	private static final BathroomLocations[] supportedLocations = BathroomLocations.values();
 	private static final String PROBLOG_VARIABLE = "location";
-	
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
-		//To be visible for the negotiator agent 
+		// To be visible for the negotiator agent
 		services.add(BathroomSensors.location.toString());
 	}
 
@@ -36,8 +36,6 @@ public class BathInhabitantLocalization extends SHDeviceAgent {
 		addBehaviour(new HandleLocationRequest());
 	}
 
- 
-	
 	private class HandleLocationRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -61,24 +59,21 @@ public class BathInhabitantLocalization extends SHDeviceAgent {
 
 	}
 
-
 	@Override
 	protected String generateRandomDeviceValues() {
 		int rnd = new Random().nextInt(supportedLocations.length);
 		return supportedLocations[rnd].toString();
 	}
 
-
 	@Override
 	protected List<String> getSHService() {
 		return services;
 	}
-	
-	 @Override
-	 protected void takeDown() {
-	 	unregisterSHServices(toAID(AgentID.BATHROOM_DF_AID));
-		super.takeDown(); 
-	  }
 
-	
+	@Override
+	protected void takeDown() {
+		unregisterSHServices(toAID(AgentID.BATHROOM_DF_AID));
+		super.takeDown();
+	}
+
 }

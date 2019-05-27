@@ -27,11 +27,13 @@ public class BathActivityRecognition extends SHDeviceAgent {
 	private static List<String> services = new ArrayList<String>();
 
 	static {
-		//THIS IS THE SERVICE THAT THE OUTPUT OF THE DATA FROM THIS SENSOR IS RELEVANT TO
-		//SO THAT THE GENERATED DATA CAN BE USED EASILY BY THE REASONER AGENT
+		// THIS IS THE SERVICE THAT THE OUTPUT OF THE DATA FROM THIS SENSOR IS RELEVANT
+		// TO
+		// SO THAT THE GENERATED DATA CAN BE USED EASILY BY THE REASONER AGENT
 		services.add(SHParameters.LIGHT_SENSOR);
 		// To be visible for the negotiator agent
-		//THIS IS THE DATA GENERATED FROM THIS SENSOR, THE SERIVCE IS USED BY THE NEOGITATOR AGENT 
+		// THIS IS THE DATA GENERATED FROM THIS SENSOR, THE SERIVCE IS USED BY THE
+		// NEOGITATOR AGENT
 		services.add(BathroomSensors.activity.toString());
 	}
 
@@ -54,7 +56,7 @@ public class BathActivityRecognition extends SHDeviceAgent {
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
-			    reply.setProtocol("fipa-request");
+				reply.setProtocol("fipa-request");
 				reply.setContent(formulateReply(PROBLOG_VARIABLE));
 				myAgent.send(reply);
 			} else {

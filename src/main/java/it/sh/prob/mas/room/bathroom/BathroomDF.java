@@ -19,10 +19,7 @@ public class BathroomDF extends df {
 		try {
 			this.addParent(getDefaultDF(), getDescriptionOfThisDF());
 			DFService.register(this, getDefaultDF(), this.getDescriptionOfThisDF());
-		
-		System.out.println("BATH ROOM DF STARTED.....");
 		} catch (FIPAException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

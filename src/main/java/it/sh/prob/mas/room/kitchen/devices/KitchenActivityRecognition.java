@@ -22,21 +22,21 @@ public class KitchenActivityRecognition extends SHDeviceAgent {
 	private static final KitchenInhabitantActivitities[] supportedActivities = KitchenInhabitantActivitities.values();
 
 	private static final String PROBLOG_VARIABLE = "activity";
-	
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
 		services.add(KitchenSensors.activity.toString());
 
-	} 
+	}
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.KITCHEN_DF_AID)));
 		addBehaviour(new HandleActivityRequest());
 	}
 
-	 
 	private class HandleActivityRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -75,12 +75,12 @@ public class KitchenActivityRecognition extends SHDeviceAgent {
 	protected List<String> getSHService() {
 		return services;
 	}
-	
-	 @Override
-	 protected void takeDown() {
-	 	super.takeDown();
-	 	unregisterSHServices(toAID(AgentID.KITCHEN_DF_AID));
-	  
-	  }
+
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.KITCHEN_DF_AID));
+
+	}
 
 }

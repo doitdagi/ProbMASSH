@@ -9,9 +9,5 @@ package it.sh.prob.mas.room.bathroom.utilites;
  */
 public enum BathroomInhabitantActivitityValues {
 
-	sleeping, // OR LAY ONE BED
-	reading, // OR WORK ON PC
-	watching_tv, // OR MOVIE
-	normal_daily_activites // Every other activities which do not belong in none of the above
-
+	bathing 
 }

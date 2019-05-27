@@ -12,6 +12,6 @@ public enum BedroomInhabitantActivitities {
 	sleeping, // OR LAY ONE BED
 	reading, // OR WORK ON PC
 	watching_tv, // OR MOVIE
-	normal_daily_activites // Every other activities which do not belong in none of the above
+	cleaning // Every other activities which do not belong in none of the above
 
 }

@@ -21,22 +21,21 @@ public class KitchenInhabitantLocalization extends SHDeviceAgent {
 
 	private static final KitchenLocations[] supportedLocations = KitchenLocations.values();
 	private static final String PROBLOG_VARIABLE = "location";
-	
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
 		services.add(KitchenSensors.location.toString());
 
 	}
-	
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.KITCHEN_DF_AID)));
 		addBehaviour(new HandleLocationRequest());
 	}
 
-	
 	private class HandleLocationRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -59,25 +58,22 @@ public class KitchenInhabitantLocalization extends SHDeviceAgent {
 
 	}
 
-
 	@Override
 	protected String generateRandomDeviceValues() {
 		int rnd = new Random().nextInt(supportedLocations.length);
 		return supportedLocations[rnd].toString();
 	}
 
-
 	@Override
 	protected List<String> getSHService() {
 		return services;
 	}
-	
-	 @Override
-	 protected void takeDown() {
-	 	super.takeDown();
-	 	unregisterSHServices(toAID(AgentID.KITCHEN_DF_AID));
-	  
-	  }
 
-	
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.KITCHEN_DF_AID));
+
+	}
+
 }

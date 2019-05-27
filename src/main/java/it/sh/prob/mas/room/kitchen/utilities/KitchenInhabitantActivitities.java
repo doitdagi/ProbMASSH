@@ -8,10 +8,8 @@ package it.sh.prob.mas.room.kitchen.utilities;
  *
  */
 public enum KitchenInhabitantActivitities {
-
-	sleeping, // OR LAY ONE BED
-	reading, // OR WORK ON PC
-	watching_tv, // OR MOVIE
-	normal_daily_activites // Every other activities which do not belong in none of the above
-
+	cooking, // OR LAY ONE BED
+	washing,
+	dinning,
+	cleaning 
 }

@@ -21,21 +21,21 @@ public class LivingroomInhabitantLocalization extends SHDeviceAgent {
 
 	private static final LivingroomLocations[] supportedLocations = LivingroomLocations.values();
 	private static final String PROBLOG_VARIABLE = "location";
-	
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
 		services.add(LivingroomSensors.location.toString());
 
 	}
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID)));
 		addBehaviour(new HandleLocationRequest());
 	}
 
-	
 	private class HandleLocationRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -58,7 +58,6 @@ public class LivingroomInhabitantLocalization extends SHDeviceAgent {
 
 	}
 
-
 	@Override
 	protected String generateRandomDeviceValues() {
 		int rnd = new Random().nextInt(supportedLocations.length);
@@ -69,12 +68,12 @@ public class LivingroomInhabitantLocalization extends SHDeviceAgent {
 	protected List<String> getSHService() {
 		return services;
 	}
-	
-	 @Override
-	 protected void takeDown() {
-	 	super.takeDown();
-	 	unregisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID));
-	  
-	  }
+
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.LIVINGROOM_DF_AID));
+
+	}
 
 }

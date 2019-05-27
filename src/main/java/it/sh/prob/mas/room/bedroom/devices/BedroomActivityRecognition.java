@@ -22,24 +22,21 @@ public class BedroomActivityRecognition extends SHDeviceAgent {
 	private static final BedroomInhabitantActivitities[] supportedActivities = BedroomInhabitantActivitities.values();
 
 	private static final String PROBLOG_VARIABLE = "activity";
-	
-	 
+
 	private static List<String> services = new ArrayList<String>();
-	
+
 	static {
 		services.add(SHParameters.LIGHT_SENSOR);
 		services.add(BedroomSensors.activity.toString());
 
 	}
-	
-	
+
 	@Override
 	protected void setup() {
 		addBehaviour(new RegisterSHServices(toAID(AgentID.BEDROOM_DF_AID)));
 		addBehaviour(new HandleActivityRequest());
 	}
 
- 
 	private class HandleActivityRequest extends CyclicBehaviour {
 		/**
 		 * 
@@ -52,7 +49,7 @@ public class BedroomActivityRecognition extends SHDeviceAgent {
 			ACLMessage msg = receive(mt);
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
-			    reply.setProtocol("fipa-request");
+				reply.setProtocol("fipa-request");
 				reply.setPerformative(ACLMessage.INFORM);
 				reply.setContent(formulateReply(PROBLOG_VARIABLE));
 				myAgent.send(reply);
@@ -79,11 +76,12 @@ public class BedroomActivityRecognition extends SHDeviceAgent {
 	protected List<String> getSHService() {
 		return services;
 	}
-	 @Override
-	 protected void takeDown() {
-	 	super.takeDown();
-	 	unregisterSHServices(toAID(AgentID.BEDROOM_DF_AID));
-	  
-	  }
+
+	@Override
+	protected void takeDown() {
+		super.takeDown();
+		unregisterSHServices(toAID(AgentID.BEDROOM_DF_AID));
+
+	}
 
 }
