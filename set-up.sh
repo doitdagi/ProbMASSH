@@ -1,5 +1,10 @@
 #!/bin/sh
 
+
+echo Installing dos2unix
+
+apt-get intall dos2unix
+
 echo Update python version 
 update-alternatives --install /usr/bin/python python /usr/bin/python3.5 1
 
