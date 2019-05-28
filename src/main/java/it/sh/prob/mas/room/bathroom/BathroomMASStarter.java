@@ -16,9 +16,11 @@ public class BathroomMASStarter extends MASStarter {
 
 	/**
 	 * 
-	 * @param args IS an array of size four args[0] boolean if the container is main
-	 *             or not args[1] boolean if we need to display GUI or not args[2]
-	 *             String: the host IP address args[3] String: the host port address
+	 * @param args IS an array of size four
+	 *           args[0] if the container is main
+	 *            args[1] boolean if we need to display GUI
+	 *             args[2]  String: the host IP address 
+	 *             args[3] String: the host port address
 	 */
 	public static void main(String[] args) {
 		if (args.length != 4) {

@@ -1,7 +1,7 @@
 package it.sh.prob.mas;
 
 public final class SHParameters {
-	//LOCATIONS
+	//rooms or locations
 	public final static String  BATHROOM = "BATHROOM";
 	public final static String KITCHEN ="KITCHEN";
 	public final static String LIVINGROOM = "LIVINGROOM";
@@ -12,7 +12,7 @@ public final class SHParameters {
 	public final static String TEMPERATURE = "TEMPERATURE";
 	
 	 
-	
+	//sensors and actuators
 	public final static String LIGHT_ACTUATOR= "LIGHT_ACTUATOR";
 	public final static String LIGHT_SENSOR= "LIGHT_SENSOR";
 	

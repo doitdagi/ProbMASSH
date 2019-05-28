@@ -55,9 +55,14 @@ public abstract class SHReasonerAgent extends SHAgent {
 		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
 		probLogResult = getProbLogResult(proLogModel);
 		sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
-		System.out.println(probLogResult);
 	}
-
+	/**
+	 * 
+	 * @param myAgent
+	 * @param sensor
+	 * @param local_DF_ID
+	 * @return
+	 */
 	private List<String> getSensorDataFromLocalProviders(Agent myAgent, String sensor, AID local_DF_ID) {
 		List<AID> sensorDataProviders = getSensorDataProviders(sensor, myAgent, local_DF_ID);
 		List<String> informationList = new ArrayList<String>();
@@ -77,7 +82,12 @@ public abstract class SHReasonerAgent extends SHAgent {
 
 		return informationList;
 	}
-
+/**
+ * 
+ * @param localCollectedData
+ * @param usrCMD
+ * @return
+ */
 	private List<String> existsMissingData(List<String> localCollectedData, UserCommands usrCMD) {
 		List<String> missingData = new ArrayList<String>();
 		List<String> essentialSensors = getEssentialSensors(usrCMD);
@@ -96,7 +106,12 @@ public abstract class SHReasonerAgent extends SHAgent {
 
 		return missingData;
 	}
-
+	/**
+	 * 
+	 * @param missingInformation
+	 * @param myAgent
+	 * @return
+	 */
 	private List<String> getMissingDataFromGlobalProviders(List<String> missingInformation, Agent myAgent) {
 		List<String> collectedData = new ArrayList<String>();
 		for (String mi : missingInformation) {
@@ -118,25 +133,46 @@ public abstract class SHReasonerAgent extends SHAgent {
 		return collectedData;
 	}
 
+	/**
+	 * 
+	 * @param missingInformation
+	 * @param myAgent
+	 * @param local_DF_ID
+	 * @return
+	 */
 	private List<String> getDefaultLocalSensorData(List<String> missingInformation, Agent myAgent, AID local_DF_ID) {
 		List<String> defaultSensorData = new ArrayList<String>();
 		for (String mi : missingInformation) {
 			System.out.println(mi);
 			defaultSensorData.add(formulateDefaultLocalSensorData(mi));
-			System.out.println("Default value for: " + mi + "...." + formulateDefaultLocalSensorData(mi));
 		}
 
 		return defaultSensorData;
 	}
 
+	/**
+	 * 
+	 * @param variable
+	 * @return
+	 */
 	protected String formulateDefaultLocalSensorData(String variable) {
 		return generateRandomCertaintiyValues() + PREFIX + variable + "(" + getDefaultValue(variable) + POSTFIX;
 	}
 
+	/**
+	 * 
+	 * @param actuator
+	 * @return
+	 */
 	private String getService(String actuator) {
 		return actuator.toString().split("_")[0];
 	}
 
+	/**
+	 * 
+	 * @param usrCMD
+	 * @return
+	 */
 	private List<String> getEssentialSensors(UserCommands usrCMD) {
 		List<String> sensors = new ArrayList<String>();
 		switch (usrCMD) {
@@ -153,6 +189,13 @@ public abstract class SHReasonerAgent extends SHAgent {
 		return sensors;
 	}
 
+	/**
+	 * 
+	 * @param actuator
+	 * @param command
+	 * @param myAgent
+	 * @param local_DF_ID
+	 */
 	private void sendActuationCommand(String actuator, String command, Agent myAgent, AID local_DF_ID) {
 		AID lightController = getDeviceControllerAgent(actuator, myAgent, local_DF_ID);
 		ACLMessage cmd = new ACLMessage(ACLMessage.INFORM);
@@ -162,6 +205,12 @@ public abstract class SHReasonerAgent extends SHAgent {
 
 	}
 
+	/**
+	 *  Build problog model
+	 * @param service
+	 * @param informationList
+	 * @return
+	 */
 	protected String buildProblogModel(String service, List<String> informationList) {
 		String model = "";
 		for (String info : informationList) {
@@ -187,7 +236,12 @@ public abstract class SHReasonerAgent extends SHAgent {
 		}
 		return model;
 	}
-
+/**
+ *  Run problog and extract the result
+ *  The result is the query with max probablisitc value 
+ * @param probLogModel
+ * @return
+ */
 	protected String getProbLogResult(String probLogModel) {
 		String command = "";
 		double value = 0;
@@ -218,7 +272,11 @@ public abstract class SHReasonerAgent extends SHAgent {
 		}
 		return null;
 	}
-
+/**
+ * Build Problog query for the given service
+ * @param service
+ * @return
+ */
 	private String buildQuery(String service) {
 		String query = "";
 		switch (service) {
@@ -233,6 +291,7 @@ public abstract class SHReasonerAgent extends SHAgent {
 		return query;
 	}
 
+	
 	@Override
 	protected List<String> getSHService() {
 		// TODO Auto-generated method stub
