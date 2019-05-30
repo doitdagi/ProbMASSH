@@ -53,6 +53,11 @@ public abstract class SHReasonerAgent extends SHAgent {
 			}
 		}
 		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
+		
+		//TODO 
+		
+		
+		
 		probLogResult = getProbLogResult(proLogModel);
 		sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
 	}
@@ -143,7 +148,6 @@ public abstract class SHReasonerAgent extends SHAgent {
 	private List<String> getDefaultLocalSensorData(List<String> missingInformation, Agent myAgent, AID local_DF_ID) {
 		List<String> defaultSensorData = new ArrayList<String>();
 		for (String mi : missingInformation) {
-			System.out.println(mi);
 			defaultSensorData.add(formulateDefaultLocalSensorData(mi));
 		}
 
