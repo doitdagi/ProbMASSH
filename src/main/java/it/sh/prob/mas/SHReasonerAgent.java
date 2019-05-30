@@ -22,9 +22,8 @@ public abstract class SHReasonerAgent extends SHAgent {
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
-	protected boolean hasProbLog =false;
+
+	protected boolean hasProbLog = false;
 
 	/**
 	 * Reason about lighting of the room
@@ -55,23 +54,33 @@ public abstract class SHReasonerAgent extends SHAgent {
 			}
 		}
 		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
-		
-		//TODO 
+
+		// TODO
 		System.out.println(proLogModel);
-		
+
 		if (hasProbLog) {
-			System.out.println("Yes I do have problog");
-			probLogResult = getProbLogResult(proLogModel);	
-		}else {
+			probLogResult = getProbLogResult(proLogModel);
+		} else {
+			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
+			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
+			requestmInfo.setProtocol("Reasoning");
+			requestmInfo.setContent(proLogModel);
+			myAgent.send(requestmInfo);
+
+			// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
+			MessageTemplate negoReplyTemplate = MessageTemplate.MatchSender(toAID(getNegotiatorAgentID()));
+			ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
 			System.out.println("No, I do not, I am  going to negotiate");
+			System.out.println(msg.getContent());
+			System.out.println("No, I do not, I am  going to negotiate");
+
 		}
-		
-	//	probLogResult = getProbLogResult(proLogModel);			
 
-		
+		// probLogResult = getProbLogResult(proLogModel);
 
-	//	sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
+		// sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
 	}
+
 	/**
 	 * 
 	 * @param myAgent
@@ -98,12 +107,13 @@ public abstract class SHReasonerAgent extends SHAgent {
 
 		return informationList;
 	}
-/**
- * 
- * @param localCollectedData
- * @param usrCMD
- * @return
- */
+
+	/**
+	 * 
+	 * @param localCollectedData
+	 * @param usrCMD
+	 * @return
+	 */
 	private List<String> existsMissingData(List<String> localCollectedData, UserCommands usrCMD) {
 		List<String> missingData = new ArrayList<String>();
 		List<String> essentialSensors = getEssentialSensors(usrCMD);
@@ -122,6 +132,7 @@ public abstract class SHReasonerAgent extends SHAgent {
 
 		return missingData;
 	}
+
 	/**
 	 * 
 	 * @param missingInformation
@@ -221,7 +232,8 @@ public abstract class SHReasonerAgent extends SHAgent {
 	}
 
 	/**
-	 *  Build problog model
+	 * Build problog model
+	 * 
 	 * @param service
 	 * @param informationList
 	 * @return
@@ -251,12 +263,14 @@ public abstract class SHReasonerAgent extends SHAgent {
 		}
 		return model;
 	}
-/**
- *  Run problog and extract the result
- *  The result is the query with max probablisitc value 
- * @param probLogModel
- * @return
- */
+
+	/**
+	 * Run problog and extract the result The result is the query with max
+	 * probablisitc value
+	 * 
+	 * @param probLogModel
+	 * @return
+	 */
 	protected String getProbLogResult(String probLogModel) {
 		String command = "";
 		double value = 0;
@@ -287,22 +301,23 @@ public abstract class SHReasonerAgent extends SHAgent {
 		}
 		return null;
 	}
-/**
- * Build Problog query for the given service
- * @param service
- * @return
- */
-	protected abstract String buildQuery(String service);
-	
-	
 
 	/**
-	 * Check if this reasoner has a problog engine..
-	 *TODO: WE CAN ALSO CHECK FROM THE SYSTEM 
+	 * Build Problog query for the given service
+	 * 
+	 * @param service
+	 * @return
+	 */
+	protected abstract String buildQuery(String service);
+
+	/**
+	 * Check if this reasoner has a problog engine.. TODO: WE CAN ALSO CHECK FROM
+	 * THE SYSTEM
+	 * 
 	 * @return
 	 */
 	protected boolean hasProbLog() {
-		if (getArguments()!= null) {
+		if (getArguments() != null) {
 			String reason = (String) getArguments()[0];
 			if (reason.equals(SHParameters.REASONING)) {
 				return true;
@@ -310,7 +325,7 @@ public abstract class SHReasonerAgent extends SHAgent {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected List<String> getSHService() {
 		// TODO Auto-generated method stub

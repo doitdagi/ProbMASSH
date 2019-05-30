@@ -44,7 +44,13 @@ public class BathReasonerAgent extends SHReasonerAgent {
 		@Override
 		public void action() {
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+			MessageTemplate mt_negotatior_request = MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+					MessageTemplate.MatchProtocol("external_query"));
+			
 			ACLMessage userRequest = myAgent.receive(mt);
+			ACLMessage negotatiorRequest = myAgent.receive(mt_negotatior_request);
+			
 			if (userRequest != null) {
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
@@ -59,6 +65,15 @@ public class BathReasonerAgent extends SHReasonerAgent {
 					System.out.println("Default, do nothing");
 					break;
 				}
+			} else if(negotatiorRequest != null){
+				String prologResult = getProbLogResult(negotatiorRequest.getContent());
+				ACLMessage reply_to_nagotiator = negotatiorRequest.createReply();
+				reply_to_nagotiator.setContent(prologResult);
+				reply_to_nagotiator.setProtocol("Reasoning_result");
+				reply_to_nagotiator.setPerformative(ACLMessage.INFORM);
+				
+				myAgent.send(reply_to_nagotiator);
+				
 			}
 
 		}

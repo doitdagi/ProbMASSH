@@ -2,6 +2,7 @@ package it.sh.prob.mas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import it.sh.prob.mas.utilites.AgentID;
 import jade.core.AID;
@@ -66,6 +67,11 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 		private MessageTemplate mt_refuse = MessageTemplate.MatchPerformative(ACLMessage.REFUSE);
 		private MessageTemplate mt_propose = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
 				MessageTemplate.MatchProtocol("Contract-Net"));
+		private MessageTemplate mt_reasoner = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				MessageTemplate.MatchProtocol("Reasoning"));
+		private MessageTemplate mt_reasoner_result = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				MessageTemplate.MatchProtocol("Reasoning_result"));
+
 
 		private MessageTemplate mt_test = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 		
@@ -77,6 +83,9 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 			ACLMessage msg_rq = myAgent.receive(mt_re_reasoner);
 			ACLMessage msg_propose = myAgent.receive(mt_propose);
 			ACLMessage msg_refuse = myAgent.receive(mt_refuse);
+			ACLMessage msg_reasoning=myAgent.receive(mt_reasoner);
+			ACLMessage msg_reasoning_result=myAgent.receive(mt_reasoner_result);
+			
 			if (msg_rq != null) {
 				requestedData = SHSensors.valueOf(msg_rq.getContent());
 				numberOfReplies = 0; // reset no of replies for each request
@@ -124,7 +133,33 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 						myAgent.send(informReasoner);
 					}
 				}
-			} else {
+			}else if(msg_reasoning!=null){
+				
+				serviceProviders = getSensorDataProviders(SHParameters.REASONING, myAgent,
+						toAID(AgentID.HOUSE_DF_AID));
+				if (serviceProviders.isEmpty()) {
+					response = new ACLMessage(ACLMessage.FAILURE);
+					response.addReceiver(getMyReasonerAID());
+					myAgent.send(response);
+				} else {
+					Random r =new Random();
+					ACLMessage request_reasoning = new ACLMessage(ACLMessage.REQUEST);
+						request_reasoning.addReceiver(serviceProviders.get(r.nextInt(serviceProviders.size())));
+					request_reasoning.setContent(msg_reasoning.getContent());
+					request_reasoning.setProtocol("request_reasoning");
+					// TODO: DO WE NEED DEADLINES
+					// request.setReplyByDate(DEADLINE); you can set deadline here
+					myAgent.send(request_reasoning);
+				}			
+				
+			}else if(msg_reasoning_result!=null) {
+				ACLMessage result =new ACLMessage(ACLMessage.INFORM);
+				result.setContent(msg_reasoning_result.getContent());
+				result.addReceiver(getMyReasonerAID());
+				myAgent.send(result);
+			}
+			
+			else {
 				block();
 			}
 		}
@@ -154,6 +189,13 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 
 		private MessageTemplate mt_inform = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
 				MessageTemplate.MatchProtocol("fipa-request"));
+		
+		private MessageTemplate mt_reasoning_request = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				MessageTemplate.MatchProtocol("reasoning_request"));
+		
+		private MessageTemplate mt_reasoning_query = MessageTemplate.and(
+				MessageTemplate.MatchPerformative(ACLMessage.INFORM),MessageTemplate.and(MessageTemplate.MatchSender(getMyReasonerAID()), 
+				MessageTemplate.MatchProtocol("reasoning_result")));
 
 		public ParticipantBehaviour() {
 		}
@@ -162,6 +204,8 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 		public void action() {
 			ACLMessage msg_cfp = myAgent.receive(mt_cfp);
 			ACLMessage msg_inform = myAgent.receive(mt_inform);
+			ACLMessage msg_reasoning_request = myAgent.receive(mt_reasoning_request);
+			ACLMessage msg_reasoning_result = myAgent.receive(mt_reasoning_query);
 			if (msg_cfp != null) {
 				replyList = new ArrayList<ACLMessage>();
 				numberOfReplies = 0;
@@ -193,7 +237,23 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 					responseMSG.setProtocol("Contract-Net");
 					myAgent.send(responseMSG);
 				}
-			} else {
+			}else if(msg_reasoning_request!=null) {
+				ACLMessage message_to_reasoner = new ACLMessage(ACLMessage.REQUEST);
+				message_to_reasoner.addReceiver(getMyReasonerAID());
+				message_to_reasoner.setContent(message_to_reasoner.getContent());
+				message_to_reasoner.setProtocol("external_query");
+				myAgent.send(message_to_reasoner);
+				
+			} else if(msg_reasoning_result!=null) {
+				ACLMessage message_from_reasoner = msg_reasoning_result.createReply();
+				message_from_reasoner.setPerformative(ACLMessage.INFORM);
+				message_from_reasoner.setProtocol("Reasoning_result");
+				message_from_reasoner.setContent(msg_reasoning_result.getContent());
+				myAgent.send(message_from_reasoner);
+			}
+			
+			
+			else {
 				block();
 			}
 		}
