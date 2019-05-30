@@ -1,5 +1,7 @@
 package it.sh.prob.mas.room.bathroom.utilites;
 
+import java.util.Arrays;
+
 import it.sh.prob.mas.ISHSensors;
 
 public enum BathroomSensors implements ISHSensors {
@@ -16,6 +18,10 @@ public enum BathroomSensors implements ISHSensors {
 	@Override
 	public ISHSensors getSerivce(String element) {
 		return BathroomSensors.valueOf(element);
+	}
+ 
+	public static  String[] getServiceNames() {
+	    return Arrays.toString(BathroomSensors.values()).replaceAll("^.|.$", "").split(", ");
 	}
 
 }

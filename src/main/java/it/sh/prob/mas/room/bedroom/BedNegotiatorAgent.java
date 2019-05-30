@@ -1,6 +1,5 @@
 package it.sh.prob.mas.room.bedroom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import it.sh.prob.mas.ISHSensors;
@@ -14,19 +13,12 @@ public class BedNegotiatorAgent extends SHNegotiatorAgent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-
-	private static List<String> services = new ArrayList<String>();
-	
-	static {
-		for (BedroomSensors sensor : BedroomSensors.values()) {
-			services.add(sensor.toString());
-		}
-	}
  
 
 	@Override
 	protected void setup() {
+		addSupportedServices(BedroomSensors.getServiceNames());
+		addReasoningAblity(); //only if applicable for the agent
 		addBehaviour(new RegisterSHServices(toAID(AgentID.HOUSE_DF_AID)));
 		addBehaviour(new InitiatorBehaviour());
 		addBehaviour(new ParticipantBehaviour());
@@ -44,7 +36,7 @@ public class BedNegotiatorAgent extends SHNegotiatorAgent {
 
 	@Override
 	protected List<String> getSHService() {
-		return services;
+		return serviceList;
 	}
 	
 	@Override 

@@ -3,6 +3,7 @@ package it.sh.prob.mas.room.bedroom;
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
 import it.sh.prob.mas.room.bedroom.utilites.BedroomInhabitantActivitities;
+import it.sh.prob.mas.room.bedroom.utilites.BedroomLights;
 import it.sh.prob.mas.room.bedroom.utilites.BedroomLocations;
 import it.sh.prob.mas.room.bedroom.utilites.BedroomLumValues;
 import it.sh.prob.mas.room.bedroom.utilites.BedroomSensors;
@@ -21,6 +22,7 @@ public class BedReasonerAgent extends SHReasonerAgent{
 
 	@Override
 	protected void setup() {
+		hasProbLog = hasProbLog();
 		addBehaviour(new ReasoningBehavior());
 	}
 	
@@ -59,6 +61,21 @@ public class BedReasonerAgent extends SHReasonerAgent{
 		return AgentID.BEDROOM_NEGOTIATOR_AID;
 	}
 
+	
+	@Override
+	protected  String buildQuery(String service) {
+		String query = "";
+		switch (service) {
+		case SHParameters.LIGHT:
+			for (BedroomLights bls : BedroomLights.values()) {
+				query = query + "query(" + bls + ").\n";
+			}
+			break;
+		default:
+			break;
+		}
+		return query;
+	}
 	@Override
 	protected String getDefaultValue(String sensorName) {
 		BedroomSensors sensor = BedroomSensors.valueOf(sensorName);

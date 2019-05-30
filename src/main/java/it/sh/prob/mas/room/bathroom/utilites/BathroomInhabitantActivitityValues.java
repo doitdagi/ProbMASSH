@@ -9,5 +9,6 @@ package it.sh.prob.mas.room.bathroom.utilites;
  */
 public enum BathroomInhabitantActivitityValues {
 
-	bathing 
+	bathing,
+	shaving
 }

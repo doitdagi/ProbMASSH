@@ -10,7 +10,7 @@ public final class SHParameters {
 	//SERVICES 
 	public final static String LIGHT = "LIGHT";
 	public final static String TEMPERATURE = "TEMPERATURE";
-	
+	public static final String REASONING =  "REASONING";
 	 
 	//sensors and actuators
 	public final static String LIGHT_ACTUATOR= "LIGHT_ACTUATOR";

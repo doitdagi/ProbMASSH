@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import it.sh.prob.mas.room.bathroom.utilites.BathroomLights;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.AID;
 import jade.core.Agent;
@@ -23,6 +22,9 @@ public abstract class SHReasonerAgent extends SHAgent {
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	
+	protected boolean hasProbLog =false;
 
 	/**
 	 * Reason about lighting of the room
@@ -55,11 +57,20 @@ public abstract class SHReasonerAgent extends SHAgent {
 		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
 		
 		//TODO 
+		System.out.println(proLogModel);
 		
+		if (hasProbLog) {
+			System.out.println("Yes I do have problog");
+			probLogResult = getProbLogResult(proLogModel);	
+		}else {
+			System.out.println("No, I do not, I am  going to negotiate");
+		}
 		
+	//	probLogResult = getProbLogResult(proLogModel);			
+
 		
-		probLogResult = getProbLogResult(proLogModel);
-		sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
+
+	//	sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
 	}
 	/**
 	 * 
@@ -281,20 +292,24 @@ public abstract class SHReasonerAgent extends SHAgent {
  * @param service
  * @return
  */
-	private String buildQuery(String service) {
-		String query = "";
-		switch (service) {
-		case SHParameters.LIGHT:
-			for (BathroomLights bls : BathroomLights.values()) {
-				query = query + "query(" + bls + ").\n";
-			}
-			break;
-		default:
-			break;
-		}
-		return query;
-	}
+	protected abstract String buildQuery(String service);
+	
+	
 
+	/**
+	 * Check if this reasoner has a problog engine..
+	 *TODO: WE CAN ALSO CHECK FROM THE SYSTEM 
+	 * @return
+	 */
+	protected boolean hasProbLog() {
+		if (getArguments()!= null) {
+			String reason = (String) getArguments()[0];
+			if (reason.equals(SHParameters.REASONING)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	@Override
 	protected List<String> getSHService() {

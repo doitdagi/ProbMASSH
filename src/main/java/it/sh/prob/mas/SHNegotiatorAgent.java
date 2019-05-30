@@ -20,6 +20,27 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 
 	protected abstract ISHSensors[] getSupportedServices();
 
+	protected List<String> serviceList = new ArrayList<String>();
+
+	protected void addSupportedServices(String[] services) {
+		for (String service : services) {
+			serviceList.add(service);
+		}
+	}
+
+	/**
+	 * Check if the reasoning ability is passed as argument, and if so add the
+	 * service into the global DF
+	 */
+	protected void addReasoningAblity() {
+		if (getArguments() != null) {
+			String reason = (String) getArguments()[0];
+			if (reason.equals(SHParameters.REASONING)) {
+				serviceList.add(SHParameters.REASONING);
+			}
+		}
+	}
+
 	/**
 	 * This behavior is for requesting information from other Negotiation agents in
 	 * other room
@@ -46,6 +67,8 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 		private MessageTemplate mt_propose = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
 				MessageTemplate.MatchProtocol("Contract-Net"));
 
+		private MessageTemplate mt_test = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+		
 		public InitiatorBehaviour() {
 		}
 
@@ -54,7 +77,6 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 			ACLMessage msg_rq = myAgent.receive(mt_re_reasoner);
 			ACLMessage msg_propose = myAgent.receive(mt_propose);
 			ACLMessage msg_refuse = myAgent.receive(mt_refuse);
-
 			if (msg_rq != null) {
 				requestedData = SHSensors.valueOf(msg_rq.getContent());
 				numberOfReplies = 0; // reset no of replies for each request
@@ -75,7 +97,7 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 					// request.setReplyByDate(DEADLINE); you can set deadline here
 					myAgent.send(request_data);
 				}
-	
+
 			} else if (msg_propose != null) {
 				replyList.add(msg_propose);
 				numberOfReplies++;

@@ -5,8 +5,11 @@ public class MASStarter {
 	protected static String HOST_PORT = "";
 	protected static boolean isMain = false;
 	protected static boolean displayGUI = false;
+	protected static boolean ableToReason =false;
+	protected static final String REASONING ="reasoning";
+	protected static final String GUI = "gui";
+	protected static final String MAIN = "main";
 	
-
 	
 	protected static boolean validIP(String ip) {
 		try {

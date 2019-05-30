@@ -1,8 +1,12 @@
 package it.sh.prob.mas.room.bathroom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomInhabitantActivitityValues;
+import it.sh.prob.mas.room.bathroom.utilites.BathroomLights;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomLocations;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomLumValues;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
@@ -15,6 +19,9 @@ import jade.lang.acl.MessageTemplate;
 
 public class BathReasonerAgent extends SHReasonerAgent {
 
+	private static List<String> services = new ArrayList<String>();
+
+
 	/**
 	 * 
 	 */
@@ -22,7 +29,8 @@ public class BathReasonerAgent extends SHReasonerAgent {
 
 	@Override
 	protected void setup() {
-		addBehaviour(new ReasoningBehavior());
+		hasProbLog = hasProbLog();
+ 			addBehaviour(new ReasoningBehavior());
 	}
 
 	// TODO: I AM WORKING ONLY ON THE USER COMMAND NOW
@@ -61,6 +69,22 @@ public class BathReasonerAgent extends SHReasonerAgent {
 	protected String getNegotiatorAgentID() {
 		return AgentID.BATHROOM_NEGOTIATOR_AID;
 	}
+	
+	
+	@Override
+	protected  String buildQuery(String service) {
+		String query = "";
+		switch (service) {
+		case SHParameters.LIGHT:
+			for (BathroomLights bls : BathroomLights.values()) {
+				query = query + "query(" + bls + ").\n";
+			}
+			break;
+		default:
+			break;
+		}
+		return query;
+	}
 
 	@Override
 	protected String getDefaultValue(String sensorName) {
@@ -85,4 +109,9 @@ public class BathReasonerAgent extends SHReasonerAgent {
 		return result;
 	}
 
+	@Override
+	protected List<String> getSHService() {
+		return services;
+	}
+	
 }

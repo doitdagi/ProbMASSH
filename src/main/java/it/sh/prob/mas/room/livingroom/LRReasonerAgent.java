@@ -4,6 +4,7 @@ import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.SHReasonerAgent;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomInhabitantActivitities;
+import it.sh.prob.mas.room.livingroom.utilities.LivingroomLights;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomLocations;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomLumValues;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomTempValues;
@@ -21,6 +22,7 @@ public class LRReasonerAgent extends SHReasonerAgent {
 
 	@Override
 	protected void setup() {
+		hasProbLog = hasProbLog();
 		addBehaviour(new ReasoningBehavior());
 	}
 
@@ -40,9 +42,8 @@ public class LRReasonerAgent extends SHReasonerAgent {
 				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
-					reasonAboutLight(myAgent,UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,
-							SHParameters.LIGHT_ACTUATOR,
-							toAID(AgentID.LIVINGROOM_DF_AID));
+					reasonAboutLight(myAgent, UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,
+							SHParameters.LIGHT_ACTUATOR, toAID(AgentID.LIVINGROOM_DF_AID));
 					break;
 //						case HEAT_UP_THE_ROOM:
 //							System.out.println("heat up the room command");
@@ -55,10 +56,25 @@ public class LRReasonerAgent extends SHReasonerAgent {
 
 		}
 	}
-	
+
 	@Override
 	protected String getNegotiatorAgentID() {
 		return AgentID.LIVINGROOM_NEGOTIATOR_AID;
+	}
+
+	@Override
+	protected String buildQuery(String service) {
+		String query = "";
+		switch (service) {
+		case SHParameters.LIGHT:
+			for (LivingroomLights bls : LivingroomLights.values()) {
+				query = query + "query(" + bls + ").\n";
+			}
+			break;
+		default:
+			break;
+		}
+		return query;
 	}
 
 	@Override
