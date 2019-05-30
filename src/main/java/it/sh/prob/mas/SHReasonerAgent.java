@@ -60,9 +60,12 @@ public abstract class SHReasonerAgent extends SHAgent {
 		System.out.println(proLogModel);
 		
 		if (hasProbLog) {
-			System.out.println("Yes I do have problog");
 			probLogResult = getProbLogResult(proLogModel);	
 		}else {
+			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
+			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
+			requestmInfo.setContent(proLogModel);
+			myAgent.send(requestmInfo);
 			System.out.println("No, I do not, I am  going to negotiate");
 		}
 		

@@ -7,6 +7,7 @@ import it.sh.prob.mas.SHNegotiatorAgent;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
 import it.sh.prob.mas.utilites.AgentID;
 import jade.core.AID;
+import jade.lang.acl.ACLMessage;
 
 //TODO: Negotiation over reasoning tasks
 public class BathNegotiatorAgent extends SHNegotiatorAgent {
@@ -31,6 +32,11 @@ public class BathNegotiatorAgent extends SHNegotiatorAgent {
 
 	@Override
 	protected ISHSensors[] getSupportedServices() {
+	
+	List<AID> reasoners =	getSensorDataProviders("reasoner", myAgent, "home-df");
+	
+	ACLMessage 
+	reasoners.get(0) 
 		return BathroomSensors.values();
 	}
 
