@@ -3,6 +3,7 @@
 0.7::spotlight.
 0.6::cabinetlight.
 
+query(spotlight).
 
 
  

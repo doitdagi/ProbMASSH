@@ -17,7 +17,7 @@ import jade.lang.acl.MessageTemplate;
 
 public abstract class SHReasonerAgent extends SHAgent {
 
-	private static final String BATH_LIGHT_RULE_PATH = "rules/light_rule.pl";
+	private static final String BATH_LIGHT_RULE_PATH = "rules/bedroom_light_rule.pl";
 
 	/**
 	 */
@@ -56,27 +56,21 @@ public abstract class SHReasonerAgent extends SHAgent {
 		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
 
 		// TODO
-		System.out.println(proLogModel);
 
 		if (hasProbLog) {
 			probLogResult = getProbLogResult(proLogModel);
-		} else {
+ 		} else {
 			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
 			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
 			requestmInfo.setProtocol("Reasoning");
 			requestmInfo.setContent(proLogModel);
 			myAgent.send(requestmInfo);
-
 			// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
-			MessageTemplate negoReplyTemplate = MessageTemplate.MatchSender(toAID(getNegotiatorAgentID()));
+			MessageTemplate negoReplyTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM), MessageTemplate.MatchSender(toAID(getNegotiatorAgentID())));
 			ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
-			System.out.println("No, I do not, I am  going to negotiate");
-			System.out.println(msg.getContent());
-			System.out.println("No, I do not, I am  going to negotiate");
-
+			probLogResult = msg.getContent();
 		}
 
-		// probLogResult = getProbLogResult(proLogModel);
 
 		// sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
 	}
@@ -144,6 +138,7 @@ public abstract class SHReasonerAgent extends SHAgent {
 		for (String mi : missingInformation) {
 			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
 			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
+			requestmInfo.setProtocol("missingdata");
 			requestmInfo.setContent(mi);
 			myAgent.send(requestmInfo);
 		}
@@ -287,6 +282,7 @@ public abstract class SHReasonerAgent extends SHAgent {
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 			Object[] result = input.lines().toArray();
 			// select the the command with max probability
+
 			for (int i = 0; i < result.length; i++) {
 				line = ((String) result[i]).split(":");
 				newValue = Double.valueOf(line[1].trim());
@@ -303,7 +299,6 @@ public abstract class SHReasonerAgent extends SHAgent {
 	}
 
 	/**
-	 * Build Problog query for the given service
 	 * 
 	 * @param service
 	 * @return

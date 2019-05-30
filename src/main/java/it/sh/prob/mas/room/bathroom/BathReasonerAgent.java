@@ -43,7 +43,7 @@ public class BathReasonerAgent extends SHReasonerAgent {
 
 		@Override
 		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),MessageTemplate.MatchProtocol("userrequest"));
 			MessageTemplate mt_negotatior_request = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 					MessageTemplate.MatchProtocol("external_query"));
@@ -69,11 +69,15 @@ public class BathReasonerAgent extends SHReasonerAgent {
 				String prologResult = getProbLogResult(negotatiorRequest.getContent());
 				ACLMessage reply_to_nagotiator = negotatiorRequest.createReply();
 				reply_to_nagotiator.setContent(prologResult);
-				reply_to_nagotiator.setProtocol("Reasoning_result");
+				reply_to_nagotiator.setProtocol("reasoning_result_XX");
 				reply_to_nagotiator.setPerformative(ACLMessage.INFORM);
 				
 				myAgent.send(reply_to_nagotiator);
 				
+				
+			}else {
+				System.out.println("i AM BLOCKED, TAKE ME OUT....");
+				block();
 			}
 
 		}

@@ -1,6 +1,7 @@
 package it.sh.prob.mas;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -38,6 +39,7 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 			String reason = (String) getArguments()[0];
 			if (reason.equals(SHParameters.REASONING)) {
 				serviceList.add(SHParameters.REASONING);
+				System.out.println("ADDING REAOING"+getLocalName());
 			}
 		}
 	}
@@ -63,18 +65,18 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 		private ACLMessage response;
 
 		private MessageTemplate mt_re_reasoner = MessageTemplate.and(MessageTemplate.MatchSender(getMyReasonerAID()),
-				MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+				MessageTemplate.and(MessageTemplate.MatchProtocol("missingdata"),
+						MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
 		private MessageTemplate mt_refuse = MessageTemplate.MatchPerformative(ACLMessage.REFUSE);
 		private MessageTemplate mt_propose = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
 				MessageTemplate.MatchProtocol("Contract-Net"));
 		private MessageTemplate mt_reasoner = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
 				MessageTemplate.MatchProtocol("Reasoning"));
-		private MessageTemplate mt_reasoner_result = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-				MessageTemplate.MatchProtocol("Reasoning_result"));
+		private MessageTemplate mt_reasoner_result = MessageTemplate.and(
+				MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+				MessageTemplate.MatchProtocol("reasoning_result"));
 
 
-		private MessageTemplate mt_test = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-		
 		public InitiatorBehaviour() {
 		}
 
@@ -83,9 +85,9 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 			ACLMessage msg_rq = myAgent.receive(mt_re_reasoner);
 			ACLMessage msg_propose = myAgent.receive(mt_propose);
 			ACLMessage msg_refuse = myAgent.receive(mt_refuse);
-			ACLMessage msg_reasoning=myAgent.receive(mt_reasoner);
-			ACLMessage msg_reasoning_result=myAgent.receive(mt_reasoner_result);
-			
+			ACLMessage msg_reasoning = myAgent.receive(mt_reasoner);
+			ACLMessage msg_reasoning_result = myAgent.receive(mt_reasoner_result);
+
 			if (msg_rq != null) {
 				requestedData = SHSensors.valueOf(msg_rq.getContent());
 				numberOfReplies = 0; // reset no of replies for each request
@@ -133,32 +135,35 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 						myAgent.send(informReasoner);
 					}
 				}
-			}else if(msg_reasoning!=null){
-				
-				serviceProviders = getSensorDataProviders(SHParameters.REASONING, myAgent,
-						toAID(AgentID.HOUSE_DF_AID));
+			} else if (msg_reasoning != null) {
+ 				serviceProviders = getSensorDataProviders(SHParameters.REASONING, myAgent, toAID(AgentID.HOUSE_DF_AID));
 				if (serviceProviders.isEmpty()) {
+					System.out.println("Reasoners not found on the network");
 					response = new ACLMessage(ACLMessage.FAILURE);
 					response.addReceiver(getMyReasonerAID());
 					myAgent.send(response);
 				} else {
-					Random r =new Random();
+					System.out.println("found reasoners..."+serviceProviders.size());
+					Random r = new Random();
 					ACLMessage request_reasoning = new ACLMessage(ACLMessage.REQUEST);
-						request_reasoning.addReceiver(serviceProviders.get(r.nextInt(serviceProviders.size())));
+					int  ran = r.nextInt(serviceProviders.size());
+ 					request_reasoning.addReceiver(serviceProviders.get(ran));
 					request_reasoning.setContent(msg_reasoning.getContent());
 					request_reasoning.setProtocol("request_reasoning");
-					// TODO: DO WE NEED DEADLINES
+ 					// TODO: DO WE NEED DEADLINES
 					// request.setReplyByDate(DEADLINE); you can set deadline here
 					myAgent.send(request_reasoning);
-				}			
-				
-			}else if(msg_reasoning_result!=null) {
-				ACLMessage result =new ACLMessage(ACLMessage.INFORM);
+					System.out.println("hOW MNAY TIMES DO WE NEET");
+				}
+
+			} else if (msg_reasoning_result != null) {
+				System.out.println("MESSAGE SENT...");
+				ACLMessage result = new ACLMessage(ACLMessage.INFORM);
 				result.setContent(msg_reasoning_result.getContent());
 				result.addReceiver(getMyReasonerAID());
 				myAgent.send(result);
 			}
-			
+
 			else {
 				block();
 			}
@@ -189,14 +194,14 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 
 		private MessageTemplate mt_inform = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
 				MessageTemplate.MatchProtocol("fipa-request"));
-		
-		private MessageTemplate mt_reasoning_request = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-				MessageTemplate.MatchProtocol("reasoning_request"));
-		
-		private MessageTemplate mt_reasoning_query = MessageTemplate.and(
-				MessageTemplate.MatchPerformative(ACLMessage.INFORM),MessageTemplate.and(MessageTemplate.MatchSender(getMyReasonerAID()), 
-				MessageTemplate.MatchProtocol("reasoning_result")));
 
+		private MessageTemplate mt_reasoning_request = MessageTemplate.and(
+				MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				MessageTemplate.MatchProtocol("request_reasoning"));
+		private MessageTemplate mt_reasoning_query = MessageTemplate.and(
+				MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+				MessageTemplate.and(MessageTemplate.MatchSender(getMyReasonerAID()),
+						MessageTemplate.MatchProtocol("reasoning_result_XX")));
 		public ParticipantBehaviour() {
 		}
 
@@ -204,8 +209,7 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 		public void action() {
 			ACLMessage msg_cfp = myAgent.receive(mt_cfp);
 			ACLMessage msg_inform = myAgent.receive(mt_inform);
-			ACLMessage msg_reasoning_request = myAgent.receive(mt_reasoning_request);
-			ACLMessage msg_reasoning_result = myAgent.receive(mt_reasoning_query);
+			ACLMessage  msg_reasoning_request = myAgent.receive(mt_reasoning_request);
 			if (msg_cfp != null) {
 				replyList = new ArrayList<ACLMessage>();
 				numberOfReplies = 0;
@@ -237,22 +241,29 @@ public abstract class SHNegotiatorAgent extends SHAgent {
 					responseMSG.setProtocol("Contract-Net");
 					myAgent.send(responseMSG);
 				}
-			}else if(msg_reasoning_request!=null) {
+			} else if (msg_reasoning_request != null) {
+			//TODO: WE WERE SENDING EMPTY MESSAGE
 				ACLMessage message_to_reasoner = new ACLMessage(ACLMessage.REQUEST);
 				message_to_reasoner.addReceiver(getMyReasonerAID());
-				message_to_reasoner.setContent(message_to_reasoner.getContent());
+				message_to_reasoner.setContent(msg_reasoning_request.getContent());
 				message_to_reasoner.setProtocol("external_query");
 				myAgent.send(message_to_reasoner);
-				
-			} else if(msg_reasoning_result!=null) {
-				ACLMessage message_from_reasoner = msg_reasoning_result.createReply();
+				ACLMessage msg_reasoning_result = myAgent.blockingReceive(mt_reasoning_query);
+				ACLMessage message_from_reasoner = msg_reasoning_request.createReply(); //here it can not be null because we we serve only one request for the time beign,
 				message_from_reasoner.setPerformative(ACLMessage.INFORM);
-				message_from_reasoner.setProtocol("Reasoning_result");
+				message_from_reasoner.setProtocol("reasoning_result");
 				message_from_reasoner.setContent(msg_reasoning_result.getContent());
 				myAgent.send(message_from_reasoner);
-			}
-			
-			
+			} 
+//			else if (msg_reasoning_result != null) {
+
+//				ACLMessage message_from_reasoner = msg_reasoning_request.createReply(); //here it can not be null because we we serve only one request for the time beign,
+//				message_from_reasoner.setPerformative(ACLMessage.INFORM);
+//				message_from_reasoner.setProtocol("reasoning_result");
+//				message_from_reasoner.setContent(msg_reasoning_result.getContent());
+//				myAgent.send(message_from_reasoner);
+//			}
+
 			else {
 				block();
 			}

@@ -69,7 +69,7 @@ public class BathroomMASStarter extends MASStarter {
 		// add and start all agent
 		for (Map.Entry<String, String> agent : memberAgents.entrySet()) {
 			try {
-				if (((agent.getKey() == AgentID.KITCHEN_NEGOTIATOR_AID)||(agent.getKey() == AgentID.BATHROOM_REASONER_AID)) && ableToReason) {
+				if (((agent.getKey() == AgentID.BATHROOM_NEGOTIATOR_AID)||(agent.getKey() == AgentID.BATHROOM_REASONER_AID)) && ableToReason) {
 					ac.createNewAgent(agent.getKey(), agent.getValue(), new String[] { SHParameters.REASONING })
 							.start();
 				} else {

@@ -65,6 +65,7 @@ public abstract class SHAgent extends Agent {
 					if (ba.getAgent().getLocalName().equals(df_AID.getLocalName())) {
 						// TODO Remove this behaviour after registrations
 						registerSHServices(df_AID, getSHService());
+						
 					}
 				}
 			};
@@ -76,7 +77,7 @@ public abstract class SHAgent extends Agent {
 		DFAgentDescription dfd = new DFAgentDescription();
 		for (String serviceName : services) {
 			ServiceDescription sd = new ServiceDescription();
-			sd.setName(serviceName);
+ 			sd.setName(serviceName);
 			sd.setType(serviceName);
 			dfd.addServices(sd);
  		}
