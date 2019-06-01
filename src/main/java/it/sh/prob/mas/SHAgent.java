@@ -128,13 +128,14 @@ public abstract class SHAgent extends Agent {
 					// TODO: WHY WE NEED THIS CHECK	
  					if (!(myAgent.getAID().equals(result[i].getName()))) {
 						sensorDataProviders.add(result[i].getName());
-
+						System.out.println("pROVIDER..."+result[i].getName());
 					}
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("SERVIE PROVIERS"+sensorDataProviders.size());
 		return sensorDataProviders;
 	}
 	

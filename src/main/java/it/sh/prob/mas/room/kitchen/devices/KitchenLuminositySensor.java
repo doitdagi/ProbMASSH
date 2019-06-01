@@ -9,6 +9,7 @@ import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.kitchen.utilities.KitchenLumValues;
 import it.sh.prob.mas.room.kitchen.utilities.KitchenSensors;
 import it.sh.prob.mas.utilites.AgentID;
+import it.sh.prob.mas.utilites.SHACLProtocolID;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -51,6 +52,7 @@ public class KitchenLuminositySensor extends SHDeviceAgent {
 			ACLMessage msg = receive(mt);
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
+				reply.setProtocol(SHACLProtocolID.MISSINGDATA_INFORM_DEVICE_TO_NEGOTIATOR);
 				reply.setPerformative(ACLMessage.INFORM);
 				reply.setContent(formulateReply(PROBLOG_VARIABLE));
 				myAgent.send(reply);

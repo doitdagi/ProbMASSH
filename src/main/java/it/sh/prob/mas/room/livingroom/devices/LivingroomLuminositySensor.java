@@ -9,6 +9,7 @@ import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomLumValues;
 import it.sh.prob.mas.room.livingroom.utilities.LivingroomSensors;
 import it.sh.prob.mas.utilites.AgentID;
+import it.sh.prob.mas.utilites.SHACLProtocolID;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -52,6 +53,7 @@ public class LivingroomLuminositySensor extends SHDeviceAgent {
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
+				reply.setProtocol(SHACLProtocolID.MISSINGDATA_INFORM_DEVICE_TO_NEGOTIATOR);
 				reply.setContent(formulateReply(PROBLOG_VARIABLE));
 				myAgent.send(reply);
 			} else {

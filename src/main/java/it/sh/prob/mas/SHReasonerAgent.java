@@ -4,11 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import it.sh.prob.mas.utilites.SHACLProtocolID;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.AID;
 import jade.core.Agent;
@@ -17,13 +18,24 @@ import jade.lang.acl.MessageTemplate;
 
 public abstract class SHReasonerAgent extends SHAgent {
 
-	private static final String BATH_LIGHT_RULE_PATH = "rules/bedroom_light_rule.pl";
-
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
 
 	protected boolean hasProbLog = false;
+
+	protected MessageTemplate mt_userrequest = MessageTemplate.and(
+			MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+			MessageTemplate.MatchProtocol(SHACLProtocolID.USER_REQUEST));
+	protected MessageTemplate mt_negotatior_request = MessageTemplate.and(
+			MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+			MessageTemplate.MatchProtocol(SHACLProtocolID.REASONING_REQUEST_FROM_NEGOTIATOR_TO_REASONER));
+
+	protected MessageTemplate mt_recive_reasoning_result = MessageTemplate.and(
+			MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+			MessageTemplate.MatchSender(toAID(getNegotiatorAgentID())));
+
+	protected abstract Path getRulePath(String service);
 
 	/**
 	 * Reason about lighting of the room
@@ -56,23 +68,21 @@ public abstract class SHReasonerAgent extends SHAgent {
 		proLogModel = buildProblogModel(getService(actuator), dataFromLocalProviders);
 
 		// TODO
-
 		if (hasProbLog) {
 			probLogResult = getProbLogResult(proLogModel);
- 		} else {
-			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
-			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
-			requestmInfo.setProtocol("Reasoning");
-			requestmInfo.setContent(proLogModel);
-			myAgent.send(requestmInfo);
+		} else {
+			ACLMessage msg_request_negotiator = new ACLMessage(ACLMessage.REQUEST);
+			msg_request_negotiator.addReceiver(toAID(getNegotiatorAgentID()));
+			msg_request_negotiator.setProtocol(SHACLProtocolID.REASONING_REQUEST_FROM_REASONER_TO_NEGOTIATOR);
+			msg_request_negotiator.setContent(proLogModel);
+			myAgent.send(msg_request_negotiator);
 			// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
-			MessageTemplate negoReplyTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM), MessageTemplate.MatchSender(toAID(getNegotiatorAgentID())));
-			ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
-			probLogResult = msg.getContent();
+			ACLMessage msg_recive_reasoning_result = myAgent.blockingReceive(mt_recive_reasoning_result);
+			probLogResult = msg_recive_reasoning_result.getContent();
 		}
+		sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
+		System.out.println(probLogResult + "..." + getLocalName());
 
-
-		// sendActuationCommand(actuator, probLogResult, myAgent, local_DF_ID);
 	}
 
 	/**
@@ -123,7 +133,6 @@ public abstract class SHReasonerAgent extends SHAgent {
 				missingData.add(sensor);
 			}
 		}
-
 		return missingData;
 	}
 
@@ -135,20 +144,23 @@ public abstract class SHReasonerAgent extends SHAgent {
 	 */
 	private List<String> getMissingDataFromGlobalProviders(List<String> missingInformation, Agent myAgent) {
 		List<String> collectedData = new ArrayList<String>();
+		MessageTemplate negoReplyTemplate = MessageTemplate.and(
+				MessageTemplate.MatchSender(toAID(getNegotiatorAgentID())),
+				MessageTemplate.or(
+						MessageTemplate.MatchProtocol(SHACLProtocolID.MISSINGDATA_INFORM_NEGOTIATOR_TO_REASONER),
+						MessageTemplate.MatchProtocol(SHACLProtocolID.MISSINGDATA_FAILURE_NEGOTIATOR_TO_REASOSNER)));
+
 		for (String mi : missingInformation) {
 			ACLMessage requestmInfo = new ACLMessage(ACLMessage.REQUEST);
 			requestmInfo.addReceiver(toAID(getNegotiatorAgentID()));
-			requestmInfo.setProtocol("missingdata");
+			requestmInfo.setProtocol(SHACLProtocolID.MISSINGDATA_REQUEST_FROM_REASONER_TO_NEGOTIATOR);
 			requestmInfo.setContent(mi);
 			myAgent.send(requestmInfo);
-		}
-
-		// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
-		MessageTemplate negoReplyTemplate = MessageTemplate.MatchSender(toAID(getNegotiatorAgentID()));
-		for (int i = 0; i < missingInformation.size(); i++) {
+			// WAIT UNTIL THE NEGOTIATOR REPLIES FOR THE REQUEST
 			ACLMessage msg = myAgent.blockingReceive(negoReplyTemplate);
-			if (msg.getPerformative() == ACLMessage.INFORM) {
-				collectedData.add(msg.getContent());
+		// Add only if it the msg is information, recive but ignore the reject ones
+			if (msg.getProtocol().contentEquals(SHACLProtocolID.MISSINGDATA_INFORM_NEGOTIATOR_TO_REASONER)) {
+				collectedData.add(msg.getContent());				
 			}
 		}
 
@@ -241,7 +253,7 @@ public abstract class SHReasonerAgent extends SHAgent {
 		switch (service) {
 		case SHParameters.LIGHT:
 			List<String> list = new ArrayList<>();
-			try (BufferedReader br = Files.newBufferedReader(Paths.get(BATH_LIGHT_RULE_PATH))) {
+			try (BufferedReader br = Files.newBufferedReader(getRulePath(SHParameters.LIGHT))) {
 				list = br.lines().collect(Collectors.toList());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -326,6 +338,5 @@ public abstract class SHReasonerAgent extends SHAgent {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	protected abstract String getDefaultValue(String sensorName);
 }

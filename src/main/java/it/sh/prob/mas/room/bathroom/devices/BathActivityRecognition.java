@@ -9,6 +9,7 @@ import it.sh.prob.mas.SHParameters;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomInhabitantActivitityValues;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
 import it.sh.prob.mas.utilites.AgentID;
+import it.sh.prob.mas.utilites.SHACLProtocolID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -54,7 +55,7 @@ public class BathActivityRecognition extends SHDeviceAgent {
 			if (msg != null) {
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
-				reply.setProtocol("fipa-request");
+				reply.setProtocol(SHACLProtocolID.MISSINGDATA_INFORM_DEVICE_TO_NEGOTIATOR);
 				reply.setContent(formulateReply(PROBLOG_VARIABLE));
 				myAgent.send(reply);
 			} else {

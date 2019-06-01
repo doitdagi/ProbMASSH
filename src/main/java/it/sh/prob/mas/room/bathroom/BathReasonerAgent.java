@@ -1,5 +1,7 @@
 package it.sh.prob.mas.room.bathroom;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +14,17 @@ import it.sh.prob.mas.room.bathroom.utilites.BathroomLumValues;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomSensors;
 import it.sh.prob.mas.room.bathroom.utilites.BathroomTempValues;
 import it.sh.prob.mas.utilites.AgentID;
+import it.sh.prob.mas.utilites.SHACLProtocolID;
 import it.sh.prob.mas.utilites.UserCommands;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 public class BathReasonerAgent extends SHReasonerAgent {
 
 	private static List<String> services = new ArrayList<String>();
 
+	private static final String BATH_LIGHT_RULE_PATH = "rules/bathroom_light_rule.pl";
+	private static final String BATH_TEMP_RULE_PATH = "";
 
 	/**
 	 * 
@@ -30,7 +34,7 @@ public class BathReasonerAgent extends SHReasonerAgent {
 	@Override
 	protected void setup() {
 		hasProbLog = hasProbLog();
- 			addBehaviour(new ReasoningBehavior());
+		addBehaviour(new ReasoningBehavior());
 	}
 
 	// TODO: I AM WORKING ONLY ON THE USER COMMAND NOW
@@ -43,55 +47,43 @@ public class BathReasonerAgent extends SHReasonerAgent {
 
 		@Override
 		public void action() {
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),MessageTemplate.MatchProtocol("userrequest"));
-			MessageTemplate mt_negotatior_request = MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-					MessageTemplate.MatchProtocol("external_query"));
-			
-			ACLMessage userRequest = myAgent.receive(mt);
-			ACLMessage negotatiorRequest = myAgent.receive(mt_negotatior_request);
-			
-			if (userRequest != null) {
-				UserCommands userCommand = UserCommands.valueOf(userRequest.getContent());
+			ACLMessage msg_userrequest = myAgent.receive(mt_userrequest);
+			ACLMessage msg_negotatiorrequest = myAgent.receive(mt_negotatior_request);
+			if (msg_userrequest != null) {
+				UserCommands userCommand = UserCommands.valueOf(msg_userrequest.getContent());
 				switch (userCommand) {
 				case TURN_ON_LIGHT:
+					System.out.println("SEND REQUEST....");
 					reasonAboutLight(myAgent, UserCommands.TURN_ON_LIGHT, SHParameters.LIGHT_SENSOR,
 							SHParameters.LIGHT_ACTUATOR, toAID(AgentID.BATHROOM_DF_AID));
 					break;
-//				case HEAT_UP_THE_ROOM:
-//					System.out.println("heat up the room command");
-//					break;
+				case HEAT_UP_ROOM:
+					System.out.println("heat up the room command");
+					break;
 				default:
 					System.out.println("Default, do nothing");
 					break;
 				}
-			} else if(negotatiorRequest != null){
-				String prologResult = getProbLogResult(negotatiorRequest.getContent());
-				ACLMessage reply_to_nagotiator = negotatiorRequest.createReply();
-				reply_to_nagotiator.setContent(prologResult);
-				reply_to_nagotiator.setProtocol("reasoning_result_XX");
-				reply_to_nagotiator.setPerformative(ACLMessage.INFORM);
-				
-				myAgent.send(reply_to_nagotiator);
-				
-				
-			}else {
-				System.out.println("i AM BLOCKED, TAKE ME OUT....");
+			} else if (msg_negotatiorrequest != null) {
+				String prologResult = getProbLogResult(msg_negotatiorrequest.getContent());
+				ACLMessage reply_to_negotiator = msg_negotatiorrequest.createReply();
+				reply_to_negotiator.setContent(prologResult);
+				reply_to_negotiator.setProtocol(SHACLProtocolID.REASONING_RESULT_FROM_REASONER_TO_NEGOTIATOR);
+				reply_to_negotiator.setPerformative(ACLMessage.INFORM);
+				myAgent.send(reply_to_negotiator);
+			} else {
 				block();
 			}
-
 		}
-
 	}
 
 	@Override
 	protected String getNegotiatorAgentID() {
 		return AgentID.BATHROOM_NEGOTIATOR_AID;
 	}
-	
-	
+
 	@Override
-	protected  String buildQuery(String service) {
+	protected String buildQuery(String service) {
 		String query = "";
 		switch (service) {
 		case SHParameters.LIGHT:
@@ -132,5 +124,17 @@ public class BathReasonerAgent extends SHReasonerAgent {
 	protected List<String> getSHService() {
 		return services;
 	}
-	
+
+	@Override
+	protected Path getRulePath(String service) {
+		switch (service) {
+		case SHParameters.LIGHT:
+			return Paths.get(BATH_LIGHT_RULE_PATH);
+		case SHParameters.TEMPERATURE:
+			return Paths.get(BATH_TEMP_RULE_PATH);
+		}
+		return null;
+
+	}
+
 }

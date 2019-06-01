@@ -67,7 +67,7 @@ public class LivingroomMASStarter extends MASStarter{
 		// add and start all agent
 		for (Map.Entry<String, String> agent : memberAgents.entrySet()) {
 			try {
-				if (((agent.getKey() == AgentID.KITCHEN_NEGOTIATOR_AID)||(agent.getKey() == AgentID.LIVINGROOM_REASONER_AID)) && ableToReason) {
+				if (((agent.getKey() == AgentID.LIVINGROOM_NEGOTIATOR_AID)||(agent.getKey() == AgentID.LIVINGROOM_REASONER_AID)) && ableToReason) {
 					ac.createNewAgent(agent.getKey(), agent.getValue(), new String[] { SHParameters.REASONING })
 							.start();
 				} else {
@@ -77,7 +77,6 @@ public class LivingroomMASStarter extends MASStarter{
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Sucessfully started...");
 	}
 	
 	
@@ -91,8 +90,6 @@ public class LivingroomMASStarter extends MASStarter{
 		memberAgents.put(AgentID.LIVINGROOM_INHABITANT_LOCALIZATION_SENSOR_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomInhabitantLocalization");
 		memberAgents.put(AgentID.LIVINGROOM_TEMPERATURE_SENSOR_AID,
 				"it.sh.prob.mas.room.livingroom.devices.LivingroomTempSensor");
-
-		
 		memberAgents.put(AgentID.LIVINGROOM_LIGHT_CONTROLLER_AID, "it.sh.prob.mas.room.livingroom.devices.LivingroomLightController");
 	}
 
